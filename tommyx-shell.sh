@@ -1,7 +1,18 @@
+## appearance
+
+ZSH_THEME=bira
+
+## plugins
+
+plugins=(git brew)
+
 ## misc configs
 
 # open emacs
 alias e="emacsclient -n "
+
+# misc alias
+alias la="ls -la"
 
 # mkdir and cd
 mkcdir () {
