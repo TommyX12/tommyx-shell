@@ -1,6 +1,6 @@
 # tommyx-shell
 
-Shell configs.
+My shell configs.
 
 ## Installation
 
