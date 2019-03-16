@@ -1,0 +1,19 @@
+* tommyx-shell
+
+My shell configs.
+
+** Installation
+
+*** zsh and shell configs
+Clone the repository.
+
+Add the following to ~~/.zshrc~, *before sourcing oh-my-zsh*.
+#+begin_src sh :tangle yes
+source PATH-TO-HERE/tommyx-shell.sh
+#+end_src
+Where ~PATH-TO-HERE~ is the path to the cloned directory.
+
+*** iTerm2 configs
+
+Go to iTerm2's general preference, and set "Load preference from a custom folder or URL" to ~iterm-config~ here.
+
