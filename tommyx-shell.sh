@@ -2,6 +2,10 @@
 
 ZSH_THEME=bira
 
+## extra path
+export PATH="$HOME/bin:$PATH"
+export PATH="$HOME/.cargo/bin:$PATH"
+
 ## plugins
 
 plugins=(git brew)
@@ -22,8 +26,8 @@ mkcdir () {
 }
 
 # cd and ls
-cdl () {
-    cd "$1" && ls
+cl () {
+    cd "$@" && ls;
 }
 
 # TODO add config for checking if my projects and configs need sync
