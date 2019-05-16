@@ -7,7 +7,7 @@ My shell configs.
 *** zsh and shell configs
 Clone the repository.
 
-Add the following to ~~/.zshrc~, *before sourcing oh-my-zsh*.
+Add the following to =~/.zshrc=, *before sourcing oh-my-zsh*.
 #+begin_src sh :tangle yes
 source PATH-TO-HERE/tommyx-shell.sh
 #+end_src
