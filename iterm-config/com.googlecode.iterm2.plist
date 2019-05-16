@@ -290,14 +290,16 @@
 	</data>
 	<key>NSTableView Supports v2 KeyBingingTable</key>
 	<true/>
+	<key>NSWindow Frame NSFontPanel</key>
+	<string>454 290 445 103 0 0 1440 900 </string>
 	<key>NSWindow Frame SessionsPreferences</key>
 	<string>269 126 606 469 0 0 1440 900 </string>
 	<key>NSWindow Frame SharedPreferences</key>
-	<string>463 352 796 486 0 0 1440 900 </string>
+	<string>463 386 796 486 0 0 1440 900 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
 	<string>738 9 690 282 0 0 1440 900 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
-	<string>176 36 585 475 0 0 1440 900 </string>
+	<string>176 52 585 451 0 0 1440 900 </string>
 	<key>New Bookmarks</key>
 	<array>
 		<dict>
@@ -534,7 +536,7 @@
 				<real>0.030829299241304398</real>
 			</dict>
 			<key>Blend</key>
-			<real>0.093770032051282065</real>
+			<real>0.13240184294871798</real>
 			<key>Blink Allowed</key>
 			<false/>
 			<key>Blinking Cursor</key>
@@ -618,13 +620,13 @@
 				<key>Alpha Component</key>
 				<real>1</real>
 				<key>Blue Component</key>
-				<real>0.863525390625</real>
+				<real>0.892791748046875</real>
 				<key>Color Space</key>
 				<string>sRGB</string>
 				<key>Green Component</key>
-				<real>0.85458818469583386</real>
+				<real>0.88676247950510345</real>
 				<key>Red Component</key>
-				<real>0.84149453043937683</real>
+				<real>0.87792914127930999</real>
 			</dict>
 			<key>Guid</key>
 			<string>118E01B1-A041-4585-A796-5222FCAE9F17</string>
@@ -948,7 +950,7 @@
 			<key>Non-ASCII Anti Aliased</key>
 			<true/>
 			<key>Normal Font</key>
-			<string>SourceCodePro-Regular 12</string>
+			<string>FiraMono-Regular 12</string>
 			<key>Only The Default BG Color Uses Transparency</key>
 			<false/>
 			<key>Option Key Sends</key>
@@ -1021,7 +1023,7 @@
 			<key>Terminal Type</key>
 			<string>xterm-256color</string>
 			<key>Thin Strokes</key>
-			<integer>4</integer>
+			<integer>0</integer>
 			<key>Transparency</key>
 			<real>0.0</real>
 			<key>Unlimited Scrollback</key>
@@ -1039,7 +1041,7 @@
 			<key>Use Underline Color</key>
 			<false/>
 			<key>Vertical Spacing</key>
-			<real>1</real>
+			<real>1.0245846667921688</real>
 			<key>Visual Bell</key>
 			<true/>
 			<key>Window Type</key>
