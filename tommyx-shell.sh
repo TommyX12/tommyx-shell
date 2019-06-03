@@ -13,7 +13,7 @@ plugins=(git brew)
 ## misc configs
 
 # increase number of open files
-alias emacs="ulimit -n 4096 && emacs"
+alias emacs="ulimit -n 32768 && emacs"
 # edit in emacs
 alias e="emacsclient -n "
 
