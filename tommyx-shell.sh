@@ -13,12 +13,15 @@ plugins=(git brew)
 ## misc configs
 
 # increase number of open files
-alias emacs="ulimit -n 32768 && emacs"
+alias emacs="ulimit -n 16384 && emacs"
 # edit in emacs
 alias e="emacsclient -n "
 
 # misc alias
 alias la="ls -la"
+
+# temperature
+alias temperature="sysctl machdep.xcpm.cpu_thermal_level; sysctl machdep.xcpm.gpu_thermal_level"
 
 # mkdir and cd
 mkcdir () {
