@@ -1,6 +1,7 @@
 ## appearance
 
-ZSH_THEME=bira
+# ZSH_THEME=bira
+ZSH_THEME=avit
 
 ## extra path
 export PATH="$HOME/bin:$PATH"
