@@ -25,7 +25,7 @@ alias la="ls -la"
 alias temperature="sysctl machdep.xcpm.cpu_thermal_level; sysctl machdep.xcpm.gpu_thermal_level"
 
 # mkdir and cd
-mkcdir () {
+mcd () {
     mkdir -p -- "$1" && cd -P -- "$1"
 }
 
