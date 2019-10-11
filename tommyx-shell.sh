@@ -11,6 +11,11 @@ export PATH="$HOME/.cargo/bin:$PATH"
 
 plugins=(git brew)
 
+# fuck
+if type thefuck > /dev/null; then
+    eval $(thefuck --alias)
+fi
+
 ## misc configs
 
 # increase number of open files
