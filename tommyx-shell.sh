@@ -9,7 +9,7 @@ export PATH="$HOME/.cargo/bin:$PATH"
 
 ## plugins
 
-plugins=(git brew)
+plugins=(git brew zsh-autosuggestions)
 
 # fuck
 if type thefuck > /dev/null; then
