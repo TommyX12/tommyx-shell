@@ -4,6 +4,13 @@ My shell configs.
 
 ** Installation
 
+*** Dependencies
+- iTerm2
+- fzf
+- zsh
+- oh-my-zsh
+- thefuck
+
 *** zsh and shell configs
 Clone the repository.
 
