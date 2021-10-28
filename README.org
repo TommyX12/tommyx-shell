@@ -8,6 +8,7 @@ My shell configs.
 - iTerm2
 - fzf
   - junegunn/fzf: A command-line fuzzy finder: https://github.com/junegunn/fzf
+  - *Note: add fzf configs after sourcing oh-my-zsh*.
 - zsh
 - oh-my-zsh
 - thefuck
