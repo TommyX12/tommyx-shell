@@ -13,7 +13,7 @@ plugins=(git brew zsh-autosuggestions)
 
 # fuck
 if type thefuck > /dev/null; then
-    eval $(thefuck --alias)
+    eval $(thefuck --alias f)
 fi
 
 ## misc configs
