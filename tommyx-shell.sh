@@ -40,7 +40,7 @@ cl () {
 }
 
 git-branch-select-recent () {
-    branches=$(git for-each-ref --sort=-committerdate refs/heads/ --format='%refname:short)' | head -30)
+    branches=$(git for-each-ref --sort=-committerdate refs/heads/ --format='%(refname:short)' | head -30)
     branch=$(echo "$branches" | fzf)
     if [ -n "$branch" ]
     then
