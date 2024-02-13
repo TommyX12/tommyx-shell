@@ -1,7 +1,7 @@
 ## appearance
 
 # ZSH_THEME=bira
-ZSH_THEME=avit
+ZSH_THEME="powerlevel10k/powerlevel10k"
 
 ## extra path
 export PATH="$HOME/bin:$PATH"
