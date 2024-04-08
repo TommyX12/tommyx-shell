@@ -72,3 +72,6 @@ git-branch-select-recent () {
 }
 
 # TODO add config for checking if my projects and configs need sync
+
+# zsh autosuggestion
+bindkey '^l' autosuggest-accept
