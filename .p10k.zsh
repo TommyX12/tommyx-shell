@@ -35,17 +35,6 @@
     # os_icon               # os identifier
     dir                     # current directory
     vcs                     # git status
-    # =========================[ Line #2 ]=========================
-    newline                 # \n
-    prompt_char             # prompt symbol
-  )
-
-  # The list of segments shown on the right. Fill it with less important segments.
-  # Right prompt on the last prompt line (where you are typing your commands) gets
-  # automatically hidden when the input line reaches it. Right prompt above the
-  # last prompt line gets hidden if it would overlap with left prompt.
-  typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
-    # =========================[ Line #1 ]=========================
     status                  # exit code of the last command
     command_execution_time  # duration of the last command
     background_jobs         # presence of background jobs
@@ -108,7 +97,17 @@
     # cpu_arch              # CPU architecture
     time                    # current time
     # =========================[ Line #2 ]=========================
-    newline
+    newline                 # \n
+    prompt_char             # prompt symbol
+  )
+
+  # The list of segments shown on the right. Fill it with less important segments.
+  # Right prompt on the last prompt line (where you are typing your commands) gets
+  # automatically hidden when the input line reaches it. Right prompt above the
+  # last prompt line gets hidden if it would overlap with left prompt.
+  typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
+    # =========================[ Line #1 ]=========================
+    # =========================[ Line #2 ]=========================
     # ip                    # ip address and bandwidth usage for a specified network interface
     # public_ip             # public IP address
     # proxy                 # system-wide http/https/ftp proxy
@@ -173,7 +172,7 @@
   # the number of prompt lines. You'll probably want to set POWERLEVEL9K_SHOW_RULER=false
   # if using this. You might also like POWERLEVEL9K_PROMPT_ADD_NEWLINE=false for more compact
   # prompt.
-  typeset -g POWERLEVEL9K_MULTILINE_FIRST_PROMPT_GAP_CHAR='─'
+  typeset -g POWERLEVEL9K_MULTILINE_FIRST_PROMPT_GAP_CHAR=' '
   if [[ $POWERLEVEL9K_MULTILINE_FIRST_PROMPT_GAP_CHAR != ' ' ]]; then
     # The color of the filler.
     typeset -g POWERLEVEL9K_MULTILINE_FIRST_PROMPT_GAP_FOREGROUND=240
