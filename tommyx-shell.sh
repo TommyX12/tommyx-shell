@@ -75,3 +75,6 @@ git-branch-select-recent () {
 
 # zsh autosuggestion
 bindkey '^l' autosuggest-accept
+
+export EDITOR=vim
+export VISUAL=vim
