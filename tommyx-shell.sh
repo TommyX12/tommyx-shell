@@ -45,7 +45,8 @@ alias emacs="ulimit -n 16384 && emacs"
 alias e="emacsclient -n "
 
 # misc alias
-alias la="ls -la"
+alias l="eza -a"
+alias la="eza -la"
 
 # temperature
 alias temperature="sysctl machdep.xcpm.cpu_thermal_level; sysctl machdep.xcpm.gpu_thermal_level"
