@@ -58,7 +58,7 @@ mcd () {
 
 # cd and ls
 cl () {
-    cd "$@" && ls;
+    cd "$@" && l;
 }
 
 git-branch-select-recent () {
