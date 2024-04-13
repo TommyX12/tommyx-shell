@@ -15,6 +15,9 @@ My shell configs.
   - nvbn/thefuck: Magnificent app which corrects your previous console command.: https://github.com/nvbn/thefuck
 - autosuggestions
   - zsh-autosuggestions/INSTALL.md at master · zsh-users/zsh-autosuggestions: https://github.com/zsh-users/zsh-autosuggestions/blob/master/INSTALL.md
+- zsh-autocomplete
+- eza
+- fzf-dir-navigator
 
 *** zsh and shell configs
 Clone the repository.

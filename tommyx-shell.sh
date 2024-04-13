@@ -21,6 +21,7 @@ plugins=(
     zsh-autosuggestions
     zsh-syntax-highlighting
     zsh-autocomplete
+    fzf-dir-navigator
 )
 
 # setup oh-my-zsh
