@@ -16,6 +16,7 @@ export PATH="$HOME/.cargo/bin:$PATH"
 
 # oh-my-zsh plugins
 plugins=(
+    colored-man-pages
     git
     brew
     zsh-autosuggestions
@@ -78,5 +79,14 @@ git-branch-select-recent () {
 # zsh autosuggestion
 bindkey '^l' autosuggest-accept
 
+# zsh autocomplete
+bindkey '^k' history-search-backward
+bindkey '^j' menu-select
+bindkey -M menuselect '^k' reverse-menu-complete
+bindkey -M menuselect '^j' menu-complete
+
 export EDITOR=vim
 export VISUAL=vim
+
+# edit command in vim
+bindkey '^e' edit-command-line
