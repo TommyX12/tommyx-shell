@@ -49,6 +49,7 @@ alias e="emacsclient -n "
 # misc alias
 alias l="eza -a"
 alias la="eza -la"
+alias i="sgpt"
 
 # temperature
 alias temperature="sysctl machdep.xcpm.cpu_thermal_level; sysctl machdep.xcpm.gpu_thermal_level"
@@ -74,6 +75,19 @@ git-branch-select-recent () {
     fi
 }
 
+# Shell-GPT integration
+_sgpt_zsh_shell() {
+    if [[ -n "$BUFFER" ]]; then
+        _sgpt_prev_cmd=$BUFFER
+        BUFFER+="⌛"
+        zle -I && zle redisplay
+        BUFFER=$(sgpt --shell <<< "$_sgpt_prev_cmd" --no-interaction)
+        zle end-of-line
+    fi
+}
+zle -N _sgpt_zsh_shell
+bindkey '^s' _sgpt_zsh_shell
+
 # TODO add config for checking if my projects and configs need sync
 
 # zsh autosuggestion
@@ -85,8 +99,13 @@ bindkey '^j' menu-select
 bindkey -M menuselect '^k' reverse-menu-complete
 bindkey -M menuselect '^j' menu-complete
 
-export EDITOR=vim
-export VISUAL=vim
+if command -v nvim >/dev/null 2>&1; then
+    export EDITOR=nvim
+    export VISUAL=nvim
+else
+    export EDITOR=vim
+    export VISUAL=vim
+fi
 
 # edit command in vim
 bindkey '^e' edit-command-line
