@@ -98,6 +98,8 @@ bindkey '^k' history-search-backward
 bindkey '^j' menu-select
 bindkey -M menuselect '^k' reverse-menu-complete
 bindkey -M menuselect '^j' menu-complete
+# make enter always submit the command
+bindkey -M menuselect '^M' .accept-line
 
 if command -v nvim >/dev/null 2>&1; then
     export EDITOR=nvim
