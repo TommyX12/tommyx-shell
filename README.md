@@ -1,0 +1,24 @@
+## Setup
+
+- MacOS:
+    - Install [brew](https://brew.sh/)
+    - Install coreutils
+        - `brew install coreutils`
+- Install [zsh](https://github.com/ohmyzsh/ohmyzsh/wiki/Installing-ZSH) (may already be pre-installed on mac)
+    - `brew install zsh`
+- Install [oh-my-zsh](https://ohmyz.sh/#install)
+    - `sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`
+- Install [fzf](https://github.com/junegunn/fzf)
+    - `brew install fzf`
+- Install [thefuck](https://github.com/nvbn/thefuck)
+    - `brew install thefuck`
+- Install [powerlevel10k](https://github.com/romkatv/powerlevel10k)
+    - `git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"`
+    - [Install font manually](https://github.com/romkatv/powerlevel10k?tab=readme-ov-file#manual-font-installation)
+- Install plugins
+    - `git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions`
+    - `git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting`
+    - `git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git $ZSH_CUSTOM/plugins/zsh-autocomplete`
+    - `git clone https://www.github.com/KulkarniKaustubh/fzf-dir-navigator ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-dir-navigator`
+- Add to `~/.zshrc` (replacing existing setup parts):
+    - `source <path-to-repo>/tommyx-shell.sh`
