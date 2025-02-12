@@ -12,6 +12,8 @@
     - `brew install fzf`
 - Install [thefuck](https://github.com/nvbn/thefuck)
     - `brew install thefuck`
+- Install [eza](https://github.com/eza-community/eza)
+    - `brew install eza`
 - Install [powerlevel10k](https://github.com/romkatv/powerlevel10k)
     - `git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"`
     - [Install font manually](https://github.com/romkatv/powerlevel10k?tab=readme-ov-file#manual-font-installation)
