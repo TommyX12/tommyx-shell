@@ -24,3 +24,4 @@
     - `git clone https://www.github.com/KulkarniKaustubh/fzf-dir-navigator ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-dir-navigator`
 - Add to `~/.zshrc` (replacing existing setup parts):
     - `source <path-to-repo>/tommyx-shell.sh`
+    - `export PATH="$PATH:<path-to-repo>/scripts"` (note: use `$HOME` instead of `~` in the path)
