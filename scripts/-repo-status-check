@@ -145,6 +145,8 @@ def main():
                     else:
                         exit(1)
 
+    print("-----------------------------------------------")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Check repo status and push changes")
