@@ -38,6 +38,18 @@ def check_if_git_dirty():
     return False
 
 
+def check_upstream_commits():
+    try:
+        run_command("git fetch origin")
+        outtext, _ = run_command("git rev-list --count HEAD..@{u}", check=False)
+        count = int(outtext.strip()) if outtext.strip().isdigit() else 0
+        return count
+
+    except Exception as e:
+        print(f"Failed to check upstream: {e}")
+        return 0
+
+
 def yn_question(prompt):
     return input(f"{prompt} [y/N]: ").strip().lower() == "y"
 
@@ -59,6 +71,21 @@ def main():
 
             os.chdir(p)
             print(f"REPO: [{os.getcwd()}]")
+
+            upstream_count = check_upstream_commits()
+            if upstream_count > 0:
+                if yn_question(f"There are {upstream_count} commits upstream. Run git pull --ff-only?"):  # noqa
+                    try:
+                        run_command("git pull --ff-only")
+
+                    except Exception as e:
+                        print(f"Fast-forward pull failed: {e}")
+                        if yn_question("Skip this repo? "):
+                            continue
+
+                        else:
+                            exit(1)
+
             try:
                 if not check_if_git_dirty():
                     continue
