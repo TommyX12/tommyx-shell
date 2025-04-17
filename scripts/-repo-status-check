@@ -3,6 +3,10 @@
 import glob
 import subprocess
 import os
+import argparse
+
+# verbose flag, controlled via command-line
+VERBOSE = False
 
 REPOS_TO_CHECK = [
     "~/data/*",
@@ -10,17 +14,18 @@ REPOS_TO_CHECK = [
 
 
 def run_command(command, shell=True, check=True):
-    print(f"Running command: {command}")
+    if VERBOSE: print(f"Running command: {command}")
     try:
         result = subprocess.run(
             command, shell=shell, check=check, capture_output=True, text=True
         )
         outtext, outerr = result.stdout, result.stderr
         out = outtext + outerr
-        print(out)
+        if VERBOSE: print(out)
         return outtext, outerr
 
     except subprocess.CalledProcessError as e:
+        # always print errors
         print(e.stdout, e.stderr)
         raise e
 
@@ -33,6 +38,7 @@ def check_if_git_dirty():
         out_lower.find("nothing to commit") == -1
         or out_lower.find("your branch is ahead of") != -1
     ):
+        print(out)
         return True
 
     return False
@@ -60,14 +66,13 @@ def press_enter_to_continue():
 
 def main():
     print("Checking repos...")
+    print("-----------------------------------------------")
     for pattern in REPOS_TO_CHECK:
         for p in glob.glob(
             os.path.abspath(os.path.expanduser(pattern)), recursive=True
         ):
             if not os.path.exists(os.path.join(p, ".git")):
                 continue
-
-            print("\n-----------------------------------------------\n")
 
             os.chdir(p)
             print(f"REPO: [{os.getcwd()}]")
@@ -99,7 +104,7 @@ def main():
                     exit(1)
 
             if yn_question(
-                f"REPO: [{os.getcwd()}]:\nRepository is dirty. Do you want to push all changes with default commit message?"
+                f"Repository [{os.getcwd()}] is dirty. Do you want to push all changes with default commit message?"
             ):
                 try:
                     run_command("git add -A")
@@ -142,4 +147,10 @@ def main():
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Check repo status and push changes")
+    parser.add_argument("-v", "--verbose", action="store_true", help="enable verbose output")
+    args = parser.parse_args()
+    # set global verbose flag
+    VERBOSE = args.verbose
+
     main()
