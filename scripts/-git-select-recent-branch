@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -e
+
+# Ensure we’re in a git repository
+git rev-parse --git-dir >/dev/null
+
+# List all local branches sorted by most recent commit date, and pipe into fzf
+selected_branch=$(git for-each-ref --sort=-committerdate \
+    --format='%(refname:short)' refs/heads/ \
+  | fzf --height=40% --prompt="Select branch> ")
+
+# If no branch was selected, exit
+if [[ -z "$selected_branch" ]]; then
+  echo "No branch selected. Exiting."
+  exit 1
+fi
+
+# Checkout the chosen branch
+git checkout "$selected_branch"

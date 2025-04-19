@@ -66,17 +66,6 @@ cl () {
     cd "$@" && l;
 }
 
-git-branch-select-recent () {
-    branches=$(git for-each-ref --sort=-committerdate refs/heads/ --format='%(refname:short)' | head -30)
-    branch=$(echo "$branches" | fzf)
-    if [ -n "$branch" ]
-    then
-        git checkout $branch
-    else
-        echo "No branch selected"
-    fi
-}
-
 # Shell-GPT integration
 _sgpt_zsh_shell() {
     if [[ -n "$BUFFER" ]]; then
@@ -111,3 +100,8 @@ fi
 
 # edit command in vim
 bindkey '^e' edit-command-line
+
+# fzf config
+export FZF_DEFAULT_OPTS='--border --info=inline --layout=reverse'
+export FZF_COMPLETION_TRIGGER='``'
+export FZF_COMPLETION_OPTS=$FZF_DEFAULT_OPTS

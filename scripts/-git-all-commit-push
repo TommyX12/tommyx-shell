@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -ex
+
+MESSAGE=${1:-"update"}
+
+git add -A
+git commit -m "$MESSAGE"
+git push

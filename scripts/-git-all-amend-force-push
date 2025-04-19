@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -ex
+
+git add -A
+git commit --amend --no-edit
+git push -f
