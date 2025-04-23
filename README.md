@@ -22,6 +22,9 @@
     - `git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting`
     - `git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git $ZSH_CUSTOM/plugins/zsh-autocomplete`
     - `git clone https://www.github.com/KulkarniKaustubh/fzf-dir-navigator ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-dir-navigator`
+- (optional) Install shell GPT
+    - `pip install shell-gpt` (mac may need `brew install pipx`)
+    - Add `export OPENAI_API_KEY=<your-openai-api-key>` to `~/.zshrc`
 - Add to `~/.zshrc` (replacing existing setup parts):
     - `source <path-to-repo>/tommyx-shell.sh`
     - `export PATH="$PATH:<path-to-repo>/scripts"` (note: use `$HOME` instead of `~` in the path)
