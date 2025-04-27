@@ -12,6 +12,11 @@ REPOS_TO_CHECK = [
     "~/data/*",
 ]
 
+# ANSI color codes for terminal output
+RED = '\033[31m'
+GREEN = '\033[32m'
+RESET = '\033[0m'
+
 
 def run_command(command, shell=True, check=True):
     if VERBOSE: print(f"Running command: {command}")
@@ -30,7 +35,7 @@ def run_command(command, shell=True, check=True):
         raise e
 
 
-def check_if_git_dirty():
+def get_git_dirty_text():
     outtext, outerr = run_command("git status")
     out = outtext + (outerr if outerr else "")
     out_lower = out.strip().lower()
@@ -38,10 +43,9 @@ def check_if_git_dirty():
         out_lower.find("nothing to commit") == -1
         or out_lower.find("your branch is ahead of") != -1
     ):
-        print(out)
-        return True
+        return out
 
-    return False
+    return None
 
 
 def check_upstream_commits():
@@ -60,13 +64,8 @@ def yn_question(prompt):
     return input(f"{prompt} [y/N]: ").strip().lower() == "y"
 
 
-def press_enter_to_continue():
-    input("Press Enter to continue...")
-
-
-def main():
-    print("Checking repos...")
-    print("-----------------------------------------------")
+def get_repo_list():
+    repos = []
     for pattern in REPOS_TO_CHECK:
         for p in glob.glob(
             os.path.abspath(os.path.expanduser(pattern)), recursive=True
@@ -74,76 +73,103 @@ def main():
             if not os.path.exists(os.path.join(p, ".git")):
                 continue
 
-            os.chdir(p)
-            print(f"REPO: [{os.getcwd()}]")
+            repos.append(p)
 
-            upstream_count = check_upstream_commits()
-            if upstream_count > 0:
-                if yn_question(f"There are {upstream_count} commits upstream. Run git pull --ff-only?"):  # noqa
+    return repos
+
+
+
+def main():
+    print("-----------------------------------------------")
+    repos = get_repo_list()
+    action_needed = []
+    for p in repos:
+        os.chdir(p)
+        print(f"{os.getcwd()} ... ", end="")
+
+        if check_upstream_commits() > 0 or get_git_dirty_text() is not None:
+            print(f"{RED}dirty{RESET}")
+            action_needed.append(p)
+
+        else:
+            print(f"{GREEN}clean{RESET}")
+
+    print("-----------------------------------------------")
+    for p in action_needed:
+        os.chdir(p)
+        print(f"REPO: [{os.getcwd()}]")
+
+        upstream_count = check_upstream_commits()
+        if upstream_count > 0:
+            if yn_question(f"There are {upstream_count} commits upstream. Run git pull --ff-only?"):  # noqa
+                try:
+                    run_command("git pull --ff-only")
+
+                except Exception as e:
+                    print(f"Fast-forward pull failed: {e}")
+                    if yn_question("Skip this repo? "):
+                        continue
+
+                    else:
+                        exit(1)
+
+        try:
+            dirty_text = get_git_dirty_text()
+            if dirty_text is not None:
+                print(dirty_text)
+
+            else:
+                continue
+
+        except Exception as e:
+            print(f"Failed to check git status: {e}")
+            if yn_question("Skip this repo?"):
+                continue
+
+            else:
+                exit(1)
+
+        if yn_question(
+            f"Repository [{os.getcwd()}] is dirty. Do you want to push all changes with default commit message?"
+        ):
+            try:
+                run_command("git add -A")
+                run_command('git commit -m "update"', check=False)
+                run_command("git push")
+
+            except Exception as e:
+                print(f"Commit & push failed: {e}")
+                if yn_question("Try git pull --rebase?"):
                     try:
-                        run_command("git pull --ff-only")
+                        run_command("git pull --rebase")
+                        if yn_question("Commit & push again?"):
+                            try:
+                                run_command("git add -A")
+                                run_command('git commit -m "update"', check=False)
+                                run_command("git push")
+                                continue
+
+                            except Exception as e:
+                                print(f"Push failed again: {e}")
+                                if yn_question("Skip this repo?"):
+                                    continue
+
+                                else:
+                                    exit(1)
 
                     except Exception as e:
-                        print(f"Fast-forward pull failed: {e}")
-                        if yn_question("Skip this repo? "):
-                            continue
+                        print(f"Failed to pull.")
+                        if yn_question("Skip this repo?"):
+                            break
 
                         else:
                             exit(1)
 
-            try:
-                if not check_if_git_dirty():
-                    continue
-
-            except Exception as e:
-                print(f"Failed to check git status: {e}")
                 if yn_question("Skip this repo?"):
-                    continue
+                    break
 
                 else:
                     exit(1)
-
-            if yn_question(
-                f"Repository [{os.getcwd()}] is dirty. Do you want to push all changes with default commit message?"
-            ):
-                try:
-                    run_command("git add -A")
-                    run_command('git commit -m "update"', check=False)
-                    run_command("git push")
-
-                except Exception as e:
-                    print(f"Commit & push failed: {e}")
-                    if yn_question("Try git pull --rebase?"):
-                        try:
-                            run_command("git pull --rebase")
-                            if yn_question("Commit & push again?"):
-                                try:
-                                    run_command("git add -A")
-                                    run_command('git commit -m "update"', check=False)
-                                    run_command("git push")
-                                    continue
-
-                                except Exception as e:
-                                    print(f"Push failed again: {e}")
-                                    if yn_question("Skip this repo?"):
-                                        continue
-
-                                    else:
-                                        exit(1)
-
-                        except Exception as e:
-                            print(f"Failed to pull.")
-                            if yn_question("Skip this repo?"):
-                                break
-
-                            else:
-                                exit(1)
-
-                    if yn_question("Skip this repo?"):
-                        break
-
-                    else:
-                        exit(1)
 
     print("-----------------------------------------------")
 
