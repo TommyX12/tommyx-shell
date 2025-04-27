@@ -82,6 +82,9 @@ def get_repo_list():
 def main():
     print("-----------------------------------------------")
     repos = get_repo_list()
+    if not repos:
+        print("No repositories found.")
+
     action_needed = []
     for p in repos:
         os.chdir(p)
@@ -95,6 +98,9 @@ def main():
             print(f"{GREEN}clean{RESET}")
 
     print("-----------------------------------------------")
+    if not action_needed:
+        print("No action needed.")
+
     for p in action_needed:
         os.chdir(p)
         print(f"REPO: [{os.getcwd()}]")
@@ -170,8 +176,6 @@ def main():
 
                 else:
                     exit(1)
-
-    print("-----------------------------------------------")
 
 
 if __name__ == "__main__":
