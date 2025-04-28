@@ -113,15 +113,21 @@ def main():
         if upstream_count > 0:
             if yn_question(f"There are {upstream_count} commits upstream. Run git pull --ff-only?"):  # noqa
                 try:
+                    print("Running git pull --ff-only...")
                     run_command("git pull --ff-only")
+                    print("Done.")
 
                 except Exception as e:
                     print(f"Fast-forward pull failed: {e}")
                     if yn_question("Skip this repo? "):
+                        print("Skipped.")
                         continue
 
                     else:
                         exit(1)
+
+            else:
+                print("Skipped.")
 
         try:
             dirty_text = get_git_dirty_text()
@@ -134,6 +140,7 @@ def main():
         except Exception as e:
             print(f"Failed to check git status: {e}")
             if yn_question("Skip this repo?"):
+                print("Skipped.")
                 continue
 
             else:
@@ -143,25 +150,32 @@ def main():
             f"Repository {format_repo(p)} is dirty. Do you want to push all changes with default commit message?"
         ):
             try:
+                print("Running git commit and push...")
                 run_command("git add -A")
                 run_command('git commit -m "update"', check=False)
                 run_command("git push")
+                print("Done.")
 
             except Exception as e:
                 print(f"Commit & push failed: {e}")
                 if yn_question("Try git pull --rebase?"):
                     try:
+                        print("Running git pull --rebase...")
                         run_command("git pull --rebase")
+                        print("Done.")
                         if yn_question("Commit & push again?"):
                             try:
+                                print("Running git commit and push again...")
                                 run_command("git add -A")
                                 run_command('git commit -m "update"', check=False)
                                 run_command("git push")
+                                print("Done.")
                                 continue
 
                             except Exception as e:
                                 print(f"Push failed again: {e}")
                                 if yn_question("Skip this repo?"):
+                                    print("Skipped.")
                                     continue
 
                                 else:
@@ -170,13 +184,15 @@ def main():
                     except Exception as e:
                         print(f"Failed to pull.")
                         if yn_question("Skip this repo?"):
-                            break
+                            print("Skipped.")
+                            continue
 
                         else:
                             exit(1)
 
                 if yn_question("Skip this repo?"):
-                    break
+                    print("Skipped.")
+                    continue
 
                 else:
                     exit(1)
