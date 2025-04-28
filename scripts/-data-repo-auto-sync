@@ -15,6 +15,7 @@ REPOS_TO_CHECK = [
 # ANSI color codes for terminal output
 RED = '\033[31m'
 GREEN = '\033[32m'
+BLUE = '\033[34m'
 RESET = '\033[0m'
 
 
@@ -78,6 +79,9 @@ def get_repo_list():
     return repos
 
 
+def format_repo(repo):
+    return f"{BLUE}[{repo}]{RESET}"
+
 
 def main():
     print("-----------------------------------------------")
@@ -88,9 +92,9 @@ def main():
     action_needed = []
     for p in repos:
         os.chdir(p)
-        print(f"{os.getcwd()} ... ", end="")
+        print(f"{format_repo(p)} ... ", end="")
 
-        if check_upstream_commits() > 0 or get_git_dirty_text() is not None:
+        if get_git_dirty_text() is not None or check_upstream_commits() > 0:
             print(f"{RED}dirty{RESET}")
             action_needed.append(p)
 
@@ -103,7 +107,7 @@ def main():
 
     for p in action_needed:
         os.chdir(p)
-        print(f"REPO: [{os.getcwd()}]")
+        print(f"REPO: {format_repo(p)}")
 
         upstream_count = check_upstream_commits()
         if upstream_count > 0:
@@ -136,7 +140,7 @@ def main():
                 exit(1)
 
         if yn_question(
-            f"Repository [{os.getcwd()}] is dirty. Do you want to push all changes with default commit message?"
+            f"Repository {format_repo(p)} is dirty. Do you want to push all changes with default commit message?"
         ):
             try:
                 run_command("git add -A")
