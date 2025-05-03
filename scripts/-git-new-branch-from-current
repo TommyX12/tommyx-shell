@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -ex
+
+BRANCH_NAME=$1
+
+if [ -z "$BRANCH_NAME" ]; then
+  echo "Usage: $0 <branch-name>"
+  exit 1
+fi
+
+git checkout -b "$BRANCH_NAME"
