@@ -103,7 +103,7 @@ def check_upstream_commits():
 
 
 def yn_question(prompt):
-    return input(f"{prompt} [y/N]: ").strip().lower() == "y"
+    return input(red(f"{prompt} [y/n]: ")).strip().lower() == "y"
 
 
 def get_repo_list():
