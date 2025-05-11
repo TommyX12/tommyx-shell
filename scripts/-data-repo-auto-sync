@@ -5,6 +5,8 @@ import subprocess
 import os
 import argparse
 
+import pydantic
+
 # verbose flag, controlled via command-line
 VERBOSE = False
 
@@ -17,6 +19,45 @@ RED = '\033[31m'
 GREEN = '\033[32m'
 BLUE = '\033[34m'
 RESET = '\033[0m'
+
+REPO_CONFIG_FILE = ".repo_auto_sync.json"
+
+
+class RepoConfig(pydantic.BaseModel):
+    auto_pull: bool = False
+    auto_push: bool = False
+    auto_rebase_on_failed_push: bool = False
+
+
+def get_repo_config(repo):
+    config_file = os.path.join(repo, REPO_CONFIG_FILE)
+    if os.path.exists(config_file):
+        try:
+            with open(config_file, "r") as f:
+                config = RepoConfig.model_validate_json(f.read())
+                return config
+
+        except pydantic.ValidationError as e:
+            print(f"Invalid config file for repo {format_repo(repo)}: {e}")
+            return RepoConfig()
+
+    return RepoConfig()
+
+
+def red(text):
+    return f"{RED}{text}{RESET}"
+
+
+def green(text):
+    return f"{GREEN}{text}{RESET}"
+
+
+def blue(text):
+    return f"{BLUE}{text}{RESET}"
+
+
+def format_repo(repo):
+    return f"{blue(f'[{repo}]')}"
 
 
 def run_command(command, shell=True, check=True):
@@ -79,12 +120,9 @@ def get_repo_list():
     return repos
 
 
-def format_repo(repo):
-    return f"{BLUE}[{repo}]{RESET}"
-
-
 def main():
     print("-----------------------------------------------")
+    repo_configs = {}
     repos = get_repo_list()
     if not repos:
         print("No repositories found.")
@@ -92,14 +130,15 @@ def main():
     action_needed = []
     for p in repos:
         os.chdir(p)
+        repo_configs[p] = get_repo_config(p)
         print(f"{format_repo(p)} ... ", end="")
 
         if get_git_dirty_text() is not None or check_upstream_commits() > 0:
-            print(f"{RED}dirty{RESET}")
+            print(f"{red('action needed')}")
             action_needed.append(p)
 
         else:
-            print(f"{GREEN}clean{RESET}")
+            print(f"{green('up to date')}")
 
     print("-----------------------------------------------")
     if not action_needed:
@@ -107,11 +146,12 @@ def main():
 
     for p in action_needed:
         os.chdir(p)
+        config = repo_configs[p]
         print(f"REPO: {format_repo(p)}")
 
         upstream_count = check_upstream_commits()
         if upstream_count > 0:
-            if yn_question(f"There are {upstream_count} commits upstream. Run git pull --ff-only?"):  # noqa
+            if config.auto_pull or yn_question(f"There are {upstream_count} commits upstream. Run git pull --ff-only?"):  # noqa
                 try:
                     print("Running git pull --ff-only...")
                     run_command("git pull --ff-only")
@@ -146,7 +186,7 @@ def main():
             else:
                 exit(1)
 
-        if yn_question(
+        if config.auto_push or yn_question(
             f"Repository {format_repo(p)} is dirty. Do you want to push all changes with default commit message?"
         ):
             try:
@@ -158,12 +198,12 @@ def main():
 
             except Exception as e:
                 print(f"Commit & push failed: {e}")
-                if yn_question("Try git pull --rebase?"):
+                if config.auto_rebase_on_failed_push or yn_question("Try git pull --rebase?"):
                     try:
                         print("Running git pull --rebase...")
                         run_command("git pull --rebase")
                         print("Done.")
-                        if yn_question("Commit & push again?"):
+                        if config.auto_push or yn_question("Commit & push again?"):
                             try:
                                 print("Running git commit and push again...")
                                 run_command("git add -A")

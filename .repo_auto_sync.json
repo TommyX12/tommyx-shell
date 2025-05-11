@@ -1,0 +1,5 @@
+{
+  "auto_pull": true,
+  "auto_push": true,
+  "auto_rebase_on_failed_push": true
+}
