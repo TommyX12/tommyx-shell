@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -ex
+
+git fetch origin
+git reset --hard origin/$(git rev-parse --abbrev-ref HEAD)

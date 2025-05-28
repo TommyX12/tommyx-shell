@@ -20,7 +20,7 @@ plugins=(
     git
     brew
     zsh-autosuggestions
-    zsh-syntax-highlighting
+    fast-syntax-highlighting
     zsh-autocomplete
     fzf-dir-navigator
 )
