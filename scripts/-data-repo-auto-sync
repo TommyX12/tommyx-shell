@@ -67,7 +67,7 @@ def run_command(command, shell=True, check=True):
     if VERBOSE: print(f"Running command: {command}")
     try:
         result = subprocess.run(
-            command, shell=shell, check=check, capture_output=True, text=True
+            command, shell=shell, check=check, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True
         )
         outtext, outerr = result.stdout, result.stderr
         out = outtext + outerr
