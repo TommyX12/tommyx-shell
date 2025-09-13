@@ -34,7 +34,10 @@ def get_repo_config(repo):
     if os.path.exists(config_file):
         try:
             with open(config_file, "r") as f:
-                config = RepoConfig.model_validate_json(f.read())
+                if hasattr(RepoConfig, 'model_validate_json'):
+                    config = RepoConfig.model_validate_json(f.read())
+                else:
+                    config = RepoConfig.parse_raw(f.read())
                 return config
 
         except pydantic.ValidationError as e:
