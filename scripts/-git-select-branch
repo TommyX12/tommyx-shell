@@ -14,7 +14,7 @@ elif [ -n "$1" ]; then
 else
     git for-each-ref refs/heads --sort=-committerdate --format='%(refname:short) | %(committerdate:relative) | %(authorname)' | \
     column -t -s '|' | \
-    fzf --height=40 --layout=reverse --border --preview='git log --oneline --color=always -n 5 $(echo {} | awk "{print \$1}")' --preview-window=right:50% \
+    fzf --height=40 --layout=reverse --border --preview='git log --oneline --color=always -n 16 $(echo {} | awk "{print \$1}")' --preview-window=right:50% \
     | awk '{print $1}' | xargs -r git switch;
 fi;
 
