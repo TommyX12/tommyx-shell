@@ -9,6 +9,8 @@ import pydantic
 
 # verbose flag, controlled via command-line
 VERBOSE = False
+# pull-only flag, controlled via command-line
+PULL_ONLY = False
 
 REPOS_TO_CHECK = [
     "~/data/*",
@@ -189,7 +191,9 @@ def main():
             else:
                 exit(1)
 
-        if config.auto_push or yn_question(
+        if PULL_ONLY:
+            print("Pull-only mode: skipping push operations.")
+        elif config.auto_push or yn_question(
             f"Repository {format_repo(p)} is dirty. Do you want to push all changes with default commit message?"
         ):
             try:
@@ -244,8 +248,10 @@ def main():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Check repo status and push changes")
     parser.add_argument("-v", "--verbose", action="store_true", help="enable verbose output")
+    parser.add_argument("--pull-only", action="store_true", help="only pull changes from remote repos, skip all push operations")
     args = parser.parse_args()
-    # set global verbose flag
+    # set global flags
     VERBOSE = args.verbose
+    PULL_ONLY = args.pull_only
 
     main()
