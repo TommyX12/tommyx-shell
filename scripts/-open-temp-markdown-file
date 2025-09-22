@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -e
+
+# use $EDITOR if set, otherwise default to 'vim'
+EDITOR=${EDITOR:-vim}
+TEMP_FILE=$(mktemp).md
+
+# Open the temporary file in the editor
+$EDITOR "$TEMP_FILE"
