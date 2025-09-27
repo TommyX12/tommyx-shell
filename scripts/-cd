@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-set -e
-
-cd ~/data && find . -type d -mindepth 1 -maxdepth 1 | \
-sed 's|^\./||' | \
-sort | \
-fzf --height=40 --layout=reverse --border --preview='ls -la ~/data/{} | head -10' --preview-window=right:50% | \
-xargs -I {} cd ~/data/{}
-

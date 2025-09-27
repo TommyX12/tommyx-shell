@@ -66,6 +66,22 @@ cl () {
     cd "$@" && l;
 }
 
+-cd () {
+    local base="$HOME/data"
+    local sel
+
+    sel="$(
+        find "$base" -mindepth 1 -maxdepth 1 -type d \
+        | sed "s|$base/||" \
+        | sort \
+        | fzf --height=40 --layout=reverse --border \
+            --preview "ls -la \"$base/{}/\" | head -40" \
+            --preview-window=right:50%
+    )" || return
+
+    [[ -n "$sel" ]] && builtin cd "$base/$sel"
+}
+
 # Shell-GPT integration
 _sgpt_zsh_shell() {
     if [[ -n "$BUFFER" ]]; then

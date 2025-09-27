@@ -4,6 +4,7 @@ import glob
 import subprocess
 import os
 import argparse
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import pydantic
 
@@ -125,6 +126,30 @@ def get_repo_list():
     return repos
 
 
+def check_repo_status(repo_path):
+    """Check status of a single repository and return (repo_path, needs_action, config)"""
+    try:
+        original_cwd = os.getcwd()
+        os.chdir(repo_path)
+
+        config = get_repo_config(repo_path)
+        needs_action = False
+
+        if get_git_dirty_text() is not None or check_upstream_commits() > 0:
+            needs_action = True
+
+        return repo_path, needs_action, config
+
+    except Exception as e:
+        print(f"Error checking repo {format_repo(repo_path)}: {e}")
+        return repo_path, False, RepoConfig()
+    finally:
+        try:
+            os.chdir(original_cwd)
+        except:
+            pass
+
+
 def main():
     print("-----------------------------------------------")
     repo_configs = {}
@@ -133,17 +158,24 @@ def main():
         print("No repositories found.")
 
     action_needed = []
-    for p in repos:
-        os.chdir(p)
-        repo_configs[p] = get_repo_config(p)
-        print(f"{format_repo(p)} ... ", end="")
 
-        if get_git_dirty_text() is not None or check_upstream_commits() > 0:
-            print(f"{red('action needed')}")
-            action_needed.append(p)
+    # Use parallel processing for initial scan with max 8 workers
+    max_workers = min(8, len(repos))
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        # Submit all repo status checks
+        future_to_repo = {executor.submit(check_repo_status, repo): repo for repo in repos}
 
-        else:
-            print(f"{green('up to date')}")
+        # Process results as they complete
+        for future in as_completed(future_to_repo):
+            repo_path, needs_action, config = future.result()
+            repo_configs[repo_path] = config
+
+            print(f"{format_repo(repo_path)} ... ", end="")
+            if needs_action:
+                print(f"{red('action needed')}")
+                action_needed.append(repo_path)
+            else:
+                print(f"{green('up to date')}")
 
     print("-----------------------------------------------")
     if not action_needed:
