@@ -47,3 +47,5 @@
 - Add to `~/.zshrc` (replacing existing setup parts):
     - `source <path-to-repo>/tommyx-shell.sh`
     - `export PATH="$PATH:<path-to-repo>/scripts"` (note: use `$HOME` instead of `~` in the path)
+- Install lazygit
+    - `brew install lazygit` (MacOS)

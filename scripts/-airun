@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -e
+
+# use $EDITOR if set, otherwise default to 'vim'
+EDITOR=${EDITOR:-vim}
+TEMP_FILE=$(mktemp).md
+
+# Open the temporary file in the editor
+$EDITOR "$TEMP_FILE"
+
+# Check if file is not empty (contains non-whitespace content)
+if [[ -s "$TEMP_FILE" && $(grep -v '^[[:space:]]*$' "$TEMP_FILE" | wc -l) -gt 0 ]]; then
+    -ai "$@" "$(cat "$TEMP_FILE")"
+else
+    # File is empty or contains only whitespace
+    echo "Error: No content provided" >&2
+    exit 1
+fi
+
