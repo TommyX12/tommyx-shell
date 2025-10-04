@@ -1,5 +1,32 @@
 #!/usr/bin/env bash
-set -ex
 
-git fetch origin
-git reset --hard origin/$(git rev-parse --abbrev-ref HEAD)
+# Sync a given branch (or current branch if none provided) with origin/<branch>
+
+set -euo pipefail
+
+branch=""
+
+# If argument is given, use it; otherwise, use current branch
+if [[ -n "${1-}" ]]; then
+  branch="$1"
+else
+  branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null) || {
+    echo "Error: Unable to determine current branch."
+    exit 1
+  }
+fi
+
+# Fetch from remote
+git fetch origin "$branch" || {
+  echo "Error: Failed to fetch branch $branch from origin."
+  exit 1
+}
+
+# Check if branch already exists locally
+if git rev-parse --verify "$branch" >/dev/null 2>&1; then
+  git checkout "$branch"
+  git reset --hard "origin/$branch"
+else
+  git checkout -b "$branch" "origin/$branch"
+fi
+
