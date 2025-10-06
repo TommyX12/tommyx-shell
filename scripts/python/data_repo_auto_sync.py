@@ -8,6 +8,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import pydantic
 
+import utils
+
+utils.f()
+
 # verbose flag, controlled via command-line
 VERBOSE = False
 # pull-only flag, controlled via command-line
