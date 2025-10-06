@@ -36,8 +36,8 @@
     - `git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git $ZSH_CUSTOM/plugins/fast-syntax-highlighting`
     - `git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git $ZSH_CUSTOM/plugins/zsh-autocomplete`
     - `git clone https://www.github.com/KulkarniKaustubh/fzf-dir-navigator ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-dir-navigator`
-- Install Python dependencies
-    - `pip install --break-system-packages --user -r <path-to-repo>/scripts/requirements.txt`
+- Install dependencies for Python scripts
+    - Install [uv](https://docs.astral.sh/uv/getting-started/installation/)
 - Install `tommyx_py_utils`
     - See https://github.com/TommyX12/tommyx-utils
 - Install shell GPT
