@@ -1,0 +1,15 @@
+#!/bin/bash
+set -euo pipefail
+
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# CD into the python directory
+cd "$SCRIPT_DIR/python" || exit 1
+
+# Get the first argument as the python script filename
+PYTHON_SCRIPT="$1"
+shift
+
+# Run uv run with the script and pass remaining arguments
+uv run "$PYTHON_SCRIPT" "$@"
