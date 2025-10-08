@@ -60,7 +60,8 @@ class NotesInferenceOutput(BaseModel):
 def infer_notes(text: str) -> str:
     prompt = f"""
 You will be given excerpt of a webpage.
-Infer a simple summary of the content: in one paragraph, what would you tell an undergraduate researcher about the content so that they understand the main idea and results?
+Infer a simple summary of the content: what would you quickly tell an undergraduate researcher about the content so that they understand the main idea and results?
+The format should be a markdown list. Use nested list (with tab indentation) if possible. Each list item should be EXTREMELY concise.
 
 Raw text:
 {text}
@@ -75,9 +76,10 @@ def add_reading_note(url: str, title: Optional[str] = None, tags: Optional[list[
     if not title:
         # Get and sanitize title
         title = get_title_from_url(url)
-        # Remove arXiv ID from title if present (e.g., "[2510.01123] Title" or "[2510.01123v2] Title" -> "Title")
-        title = re.sub(r'^\[\d{4}\.\d{5}(v\d+)?\]\s*', '', title)
     
+    # Remove arXiv ID from title if present (e.g., "[2510.01123] Title" or "[2510.01123v2] Title" -> "Title")
+    title = re.sub(r'^\[\d{4}\.\d{5}(v\d+)?\]\s*', '', title)
+
     if not tags or not notes:
         # Get text from url
         page_text_sample = get_text_from_url(url, max_chars=5000)
@@ -104,6 +106,9 @@ def add_reading_note(url: str, title: Optional[str] = None, tags: Optional[list[
     output_dir = os.path.expanduser('~/data/notes/obsidian')
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, f'{filename}.md')
+    # Ensure the file does not already exist
+    if os.path.exists(output_path):
+        raise FileExistsError(f"File {output_path} already exists")
 
     # Write final markdown file
     final_content = f"""# {title}
