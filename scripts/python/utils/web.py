@@ -74,10 +74,16 @@ def get_title_from_url(url):
 
 
 def get_text_from_url(url, max_chars=None):
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, "html.parser")
+    try:
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, "html.parser")
 
-    # Extract full text
-    text = soup.get_text(separator=" ", strip=True)
+        # Extract full text
+        text = soup.get_text(separator=" ", strip=True)
 
-    return text[:max_chars]
+        return text[:max_chars]
+    
+    except Exception as e:
+        print(f"Warning: Could not get text from URL: {url}")
+        print(e)
+        return None

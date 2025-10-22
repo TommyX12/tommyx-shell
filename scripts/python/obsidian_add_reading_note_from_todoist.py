@@ -35,6 +35,9 @@ def main():
             except Exception as e:
                 print(f"Error adding task to reading notes: {e}")
 
+            print("======================")
+            print()
+
 
 if __name__ == '__main__':
     main()

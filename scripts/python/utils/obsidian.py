@@ -1,8 +1,9 @@
 import os
 import re
+import requests
 from typing import Optional
 from .web import get_title_from_url, get_text_from_url
-from .ai import call_llm
+from .ai import call_llm, LLMConfig
 from pydantic import BaseModel
 
 
@@ -57,11 +58,17 @@ class NotesInferenceOutput(BaseModel):
     notes: str
 
 
-def infer_notes(text: str) -> str:
+infer_notes_system_prompt = """
+You will be given excerpt of an article.
+If this is not a research article, summarize the main key ideas.
+If this is a research article, summarize the problem, novel contribution (e.g. method), key results. keep only the most important details (e.g. a few points max for the contributions and results), and summarize the exact insight; don't just say "it introduced a new method", say what the method actually is (e.g. main technical details). don't just say "result is better than baseline", say how much it's better and what the values actually are.
+The format should be a markdown list. Use nested list (with tab indentation) if possible. Each list item should be extremely concise. Use inline latex (surrounded by $) for all math and symbolic expressions.
+"""
+
+
+def infer_notes_from_text(text: str) -> str:
     prompt = f"""
-You will be given excerpt of a webpage.
-Infer a simple summary of the content: what would you quickly tell an undergraduate researcher about the content so that they understand the main idea and results?
-The format should be a markdown list. Use nested list (with tab indentation) if possible. Each list item should be EXTREMELY concise.
+{infer_notes_system_prompt}
 
 Raw text:
 {text}
@@ -69,7 +76,30 @@ Raw text:
     return call_llm(prompt, NotesInferenceOutput).notes
 
 
+def infer_notes_from_pdf(pdf_url: str) -> str:
+    return call_llm(
+        [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "input_text",
+                        "text": infer_notes_system_prompt
+                    },
+                    {
+                        "type": "input_file",
+                        "file_url": pdf_url
+                    }
+                ]
+            }
+        ],
+        NotesInferenceOutput,
+        config=LLMConfig(model="gpt-5-mini"),
+    ).notes
+
+
 def add_reading_note(url: str, title: Optional[str] = None, tags: Optional[list[str]] = None, notes: Optional[str] = None):
+    print(f"Adding reading note for: {url}")
     if not url:
         raise ValueError("URL is required")
 
@@ -80,15 +110,49 @@ def add_reading_note(url: str, title: Optional[str] = None, tags: Optional[list[
     # Remove arXiv ID from title if present (e.g., "[2510.01123] Title" or "[2510.01123v2] Title" -> "Title")
     title = re.sub(r'^\[\d{4}\.\d{5}(v\d+)?\]\s*', '', title)
 
-    if not tags or not notes:
-        # Get text from url
-        page_text_sample = get_text_from_url(url, max_chars=5000)
+    # Get text from url
+    page_text_sample = get_text_from_url(url, max_chars=200000)
 
     if not tags:
+        if not page_text_sample:
+            raise ValueError("Cannot infer tag, no text found from URL")
+
         tags = infer_tags(page_text_sample)
 
+    # Check if URL is an arXiv abstract URL and convert to PDF URL
+    pdf_url = None
+    arxiv_abs_match = re.search(r'arxiv\.org/abs/(\d{4}\.\d{5}(v\d+)?)', url)
+    if arxiv_abs_match:
+        arxiv_id = arxiv_abs_match.group(1)
+        pdf_url = f'https://arxiv.org/pdf/{arxiv_id}'
+        print(f"Found arXiv PDF URL: {pdf_url}")
+        # Check PDF size before downloading
+        try:
+            head_response = requests.head(pdf_url, allow_redirects=True, timeout=5)
+            content_length = head_response.headers.get('Content-Length')
+            if content_length:
+                size_mb = int(content_length) / (1024 * 1024)
+                print(f"PDF size: {size_mb:.2f} MB")
+                if size_mb > 10:
+                    print(f"PDF size exceeds 10 MB limit. Falling back to text summarization.")
+                    pdf_url = None
+
+        except Exception as e:
+            print(f"Could not check PDF size: {e}. Falling back to text summarization.")
+            pdf_url = None
+
+    if not pdf_url:
+        print("Inferring notes from text...")
+        ai_notes = infer_notes_from_text(page_text_sample)
+    else:
+        print("Inferring notes from PDF...")
+        ai_notes = infer_notes_from_pdf(pdf_url)
+    
     if not notes:
-        notes = infer_notes(page_text_sample)
+        notes = ai_notes
+
+    else:
+        notes = notes + "\n\n" + ai_notes
     
     filename = sanitize_to_md_filename(title)
 
@@ -103,6 +167,7 @@ def add_reading_note(url: str, title: Optional[str] = None, tags: Optional[list[
         date_str = date.today().strftime('%Y-%m-%d')
 
     # Create output file
+    print(f"Creating output file...")
     output_dir = os.path.expanduser('~/data/notes/obsidian')
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, f'{filename}.md')
@@ -136,4 +201,4 @@ date:: {date_str}
     with open(output_path, 'w') as f:
         f.write(final_content)
 
-    print(f"Created: {output_path}")
+    print(f"Created file: {output_path}")
