@@ -71,15 +71,23 @@ cl () {
     local sel
 
     sel="$(
-        find "$base" -mindepth 1 -maxdepth 1 -type d \
-        | sed "s|$base/||" \
+        {
+            echo "."       # Add current directory (~/data) as an option
+            find "$base" -mindepth 1 -maxdepth 1 -type d | sed "s|$base/||"
+        } \
         | sort \
         | fzf --height=40 --layout=reverse --border \
-            --preview "ls -la \"$base\"/{} | head -40" \
+            --preview 'ls -la "$base"/{} | head -40' \
             --preview-window=right:50%
     )" || return
 
-    [[ -n "$sel" ]] && builtin cd "$base/$sel"
+    if [[ -n "$sel" ]]; then
+        if [[ "$sel" == "." ]]; then
+            builtin cd "$base"
+        else
+            builtin cd "$base/$sel"
+        fi
+    fi
 }
 
 # Shell-GPT integration

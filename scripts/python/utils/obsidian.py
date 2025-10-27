@@ -22,31 +22,34 @@ class TagInferenceOutput(BaseModel):
     tags: list[str]
 
 
-def infer_tags(text: str) -> list[str]:
+def infer_tags(text: str, user_notes: Optional[str] = None) -> list[str]:
     prompt = f"""
 You will be given excerpt of a webpage.
 Infer a list of tags from it's content. Each tag should consist of one or more lowercase words separated by dash.
 Infer at most 3 (most relevant) tags.
 First, check each of the following existing tags to see if the content matches. Include any matching tags in the output.
 Then, infer any additional tags from the content, only if you think the content is not relevant to any of the existing tags.
-Existing tags:
-- agent
-- alignment
-- architecture
-- diffusion
-- distillation
-- dynamical-system
-- efficiency
-- energy-based-model
-- neural-computation
-- reasoning
-- reinforcement-learning
-- reward-model
-- rnn
-- scaling
-- search
-- training
-- transformer
+Existing tags (and their descriptions):
+- agent (agentic llm systems)
+- alignment (alignment to human values)
+- architecture (new architecture improvements)
+- data (data collection, generation, or preparation)
+- diffusion (diffusion models)
+- distillation (distillation techniques)
+- dynamical-system (dynamical system models)
+- efficiency (efficiency improvements)
+- energy-based-model (energy-based models)
+- neural-computation (neural computation techniques)
+- reasoning (reasoning or thinking techniques)
+- reinforcement-learning (reinforcement learning models)
+- reward-model (reward models)
+- rnn (recurrent neural networks)
+- scaling (scaling techniques)
+- search (techniques for searching information)
+- training (new training techniques or improvements)
+- transformer (related to transformer models)
+
+{f"User notes: {user_notes}" if user_notes else ""}
 
 Raw text:
 {text}
@@ -66,9 +69,11 @@ The format should be a markdown list. Use nested list (with tab indentation) if 
 """
 
 
-def infer_notes_from_text(text: str) -> str:
+def infer_notes_from_text(text: str, user_notes: Optional[str] = None) -> str:
     prompt = f"""
 {infer_notes_system_prompt}
+
+{f"User notes: {user_notes}" if user_notes else ""}
 
 Raw text:
 {text}
@@ -76,7 +81,13 @@ Raw text:
     return call_llm(prompt, NotesInferenceOutput).notes
 
 
-def infer_notes_from_pdf(pdf_url: str) -> str:
+def infer_notes_from_pdf(pdf_url: str, user_notes: Optional[str] = None) -> str:
+    prompt = f"""
+{infer_notes_system_prompt}
+
+{f"User notes: {user_notes}" if user_notes else ""}
+"""
+
     return call_llm(
         [
             {
@@ -84,7 +95,7 @@ def infer_notes_from_pdf(pdf_url: str) -> str:
                 "content": [
                     {
                         "type": "input_text",
-                        "text": infer_notes_system_prompt
+                        "text": prompt
                     },
                     {
                         "type": "input_file",
@@ -117,7 +128,7 @@ def add_reading_note(url: str, title: Optional[str] = None, tags: Optional[list[
         if not page_text_sample:
             raise ValueError("Cannot infer tag, no text found from URL")
 
-        tags = infer_tags(page_text_sample)
+        tags = infer_tags(page_text_sample, notes)
 
     # Check if URL is an arXiv abstract URL and convert to PDF URL
     pdf_url = None
@@ -143,10 +154,10 @@ def add_reading_note(url: str, title: Optional[str] = None, tags: Optional[list[
 
     if not pdf_url:
         print("Inferring notes from text...")
-        ai_notes = infer_notes_from_text(page_text_sample)
+        ai_notes = infer_notes_from_text(page_text_sample, notes)
     else:
         print("Inferring notes from PDF...")
-        ai_notes = infer_notes_from_pdf(pdf_url)
+        ai_notes = infer_notes_from_pdf(pdf_url, notes)
     
     if not notes:
         notes = ai_notes
