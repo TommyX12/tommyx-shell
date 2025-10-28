@@ -71,7 +71,18 @@ def main():
         if tags:
             tags = [tag.strip() for tag in tags.split(',') if tag.strip()]
 
-        add_reading_note(url, title, tags, notes)
+        try:
+            add_reading_note(url, title, tags, notes)
+        
+        except Exception as e:
+            import traceback
+            print(f"Error adding reading note: {e}")
+            traceback.print_exc()
+            print("Here are the parameters for reference:")
+            print(f"URL: {url}")
+            print(f"Title: {title}")
+            print(f"Tags: {tags}")
+            print(f"Notes: {notes}")
 
     finally:
         # Clean up temp file
