@@ -105,7 +105,7 @@ def infer_notes_from_pdf(pdf_url: str, user_notes: Optional[str] = None) -> str:
             }
         ],
         NotesInferenceOutput,
-        config=LLMConfig(model="gpt-5-mini"),
+        config=LLMConfig(model="gpt-5"),
     ).notes
 
 
