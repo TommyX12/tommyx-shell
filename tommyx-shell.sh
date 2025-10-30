@@ -144,9 +144,18 @@ zstyle :bracketed-paste-magic paste-init pasteinit
 zstyle :bracketed-paste-magic paste-finish pastefinish
 
 fzf_cmd_widget() {
-    local selected
-    selected=$(print -rl -- ${(k)commands} | sort -u | fzf --prompt="cmd> " --height=40 --layout=reverse) || return
-    LBUFFER+="$selected "
+  emulate -L zsh -o no_aliases
+  zle -I  # clear any pending display state before running an external TUI
+
+  local selected
+  selected=$(
+    print -rl -- ${(k)commands} |
+      sort -u |
+      fzf --prompt='cmd> ' --height=40% --layout=reverse
+  ) || return
+
+  LBUFFER+="${selected} "
+  zle reset-prompt   # or: zle redisplay
 }
 zle -N fzf_cmd_widget
 bindkey '^a' fzf_cmd_widget
