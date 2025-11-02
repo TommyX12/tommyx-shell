@@ -39,6 +39,7 @@ Existing tags (and their descriptions):
 - dynamical-system (dynamical system models)
 - efficiency (efficiency improvements)
 - energy-based-model (energy-based models)
+- multi-modal (multi-modal models)
 - neural-computation (neural computation techniques)
 - reasoning (reasoning or thinking techniques)
 - reinforcement-learning (reinforcement learning models)
