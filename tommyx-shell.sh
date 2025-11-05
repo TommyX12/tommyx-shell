@@ -109,10 +109,12 @@ bindkey '^s' _sgpt_zsh_shell
 bindkey '^l' autosuggest-accept
 
 # zsh autocomplete
-bindkey '^k' history-search-backward
+bindkey '^k' history-incremental-search-backward
 bindkey '^j' menu-select
 bindkey -M menuselect '^k' reverse-menu-complete
 bindkey -M menuselect '^j' menu-complete
+zstyle ':autocomplete:*' default-context history-incremental-search-backward
+zstyle ':autocomplete:history-incremental-search-backward:*' list-lines 5
 
 if command -v nvim >/dev/null 2>&1; then
     export EDITOR=nvim
