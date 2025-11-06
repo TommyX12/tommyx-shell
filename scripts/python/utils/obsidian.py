@@ -125,11 +125,19 @@ def add_reading_note(url: str, title: Optional[str] = None, tags: Optional[list[
     # Get text from url
     page_text_sample = get_text_from_url(url, max_chars=200000)
 
-    if not tags:
-        if not page_text_sample:
+    # Always try to infer tags if we have text
+    inferred_tags = []
+    if page_text_sample:
+        inferred_tags = infer_tags(page_text_sample, notes)
+    
+    # Union user-provided tags with inferred tags
+    if tags:
+        # Combine user tags with inferred tags, removing duplicates
+        tags = list(set(tags + inferred_tags))
+    else:
+        if not inferred_tags:
             raise ValueError("Cannot infer tag, no text found from URL")
-
-        tags = infer_tags(page_text_sample, notes)
+        tags = inferred_tags
 
     # Check if URL is an arXiv abstract URL and convert to PDF URL
     pdf_url = None
