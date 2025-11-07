@@ -113,6 +113,8 @@ bindkey '^k' history-incremental-search-backward
 bindkey '^j' menu-select
 bindkey -M menuselect '^k' reverse-menu-complete
 bindkey -M menuselect '^j' menu-complete
+bindkey -M menuselect '^M' .accept-line
+bindkey -M menuselect '\r' .accept-line
 zstyle ':autocomplete:*' default-context history-incremental-search-backward
 zstyle ':autocomplete:history-incremental-search-backward:*' list-lines 5
 
