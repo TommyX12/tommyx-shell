@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
--run-python-script obsidian_add_reading_note_from_todoist.py "$@"
+-run-tommyx-python-script obsidian_add_reading_note_from_todoist.py "$@"

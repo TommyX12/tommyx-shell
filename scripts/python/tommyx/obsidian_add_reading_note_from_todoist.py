@@ -1,5 +1,5 @@
-from utils.todoist import get_tasks, get_inbox_project_id, delete_task
-from utils.obsidian import add_reading_note
+from tommyx.utils.todoist import get_tasks, get_inbox_project_id, delete_task
+from tommyx.utils.obsidian import add_reading_note
 
 def add_task_to_reading_notes(task):
     # parse the url. if task.content itself is entirely a url, use that as the url. otherwise, check if task.content is a markdown link. if so, parse it into url and title.

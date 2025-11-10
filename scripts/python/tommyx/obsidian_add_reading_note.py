@@ -4,7 +4,7 @@ import tempfile
 import subprocess
 import re
 import argparse
-from utils.obsidian import add_reading_note
+from tommyx.utils.obsidian import add_reading_note
 from typing import Optional
 
 

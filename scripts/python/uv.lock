@@ -1224,29 +1224,6 @@ wheels = [
 ]
 
 [[package]]
-name = "python"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "bs4" },
-    { name = "litellm" },
-    { name = "openai" },
-    { name = "pydantic" },
-    { name = "requests" },
-    { name = "todoist-api-python" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "bs4", specifier = ">=0.0.2" },
-    { name = "litellm", specifier = ">=1.77.7" },
-    { name = "openai", specifier = ">=2.2.0" },
-    { name = "pydantic", specifier = ">=2.0.0" },
-    { name = "requests", specifier = ">=2.32.5" },
-    { name = "todoist-api-python", specifier = ">=3.1.0" },
-]
-
-[[package]]
 name = "python-dotenv"
 version = "1.1.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1706,6 +1683,29 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/36/65/7e75caea90bc73c1dd8d40438adf1a7bc26af3b8d0a6705ea190462506e1/tokenizers-0.22.1-cp39-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:a0f307d490295717726598ef6fa4f24af9d484809223bbc253b201c740a06390", size = 9681250, upload-time = "2025-09-19T09:49:21.501Z" },
     { url = "https://files.pythonhosted.org/packages/30/2c/959dddef581b46e6209da82df3b78471e96260e2bc463f89d23b1bf0e52a/tokenizers-0.22.1-cp39-abi3-win32.whl", hash = "sha256:b5120eed1442765cd90b903bb6cfef781fd8fe64e34ccaecbae4c619b7b12a82", size = 2472003, upload-time = "2025-09-19T09:49:27.089Z" },
     { url = "https://files.pythonhosted.org/packages/b3/46/e33a8c93907b631a99377ef4c5f817ab453d0b34f93529421f42ff559671/tokenizers-0.22.1-cp39-abi3-win_amd64.whl", hash = "sha256:65fd6e3fb11ca1e78a6a93602490f134d1fdeb13bcef99389d5102ea318ed138", size = 2674684, upload-time = "2025-09-19T09:49:24.953Z" },
+]
+
+[[package]]
+name = "tommyx-shell-scripts-python"
+version = "0.1.0"
+source = { editable = "." }
+dependencies = [
+    { name = "bs4" },
+    { name = "litellm" },
+    { name = "openai" },
+    { name = "pydantic" },
+    { name = "requests" },
+    { name = "todoist-api-python" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "bs4", specifier = ">=0.0.2" },
+    { name = "litellm", specifier = ">=1.77.7" },
+    { name = "openai", specifier = ">=2.2.0" },
+    { name = "pydantic", specifier = ">=2.0.0" },
+    { name = "requests", specifier = ">=2.32.5" },
+    { name = "todoist-api-python", specifier = ">=3.1.0" },
 ]
 
 [[package]]

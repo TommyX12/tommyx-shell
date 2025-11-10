@@ -2,8 +2,8 @@ import os
 import re
 import requests
 from typing import Optional
-from .web import get_title_from_url, get_text_from_url
-from .ai import call_llm, LLMConfig
+from tommyx.utils.web import get_title_from_url, get_text_from_url
+from tommyx.utils.ai import call_llm, LLMConfig
 from pydantic import BaseModel
 
 
@@ -39,6 +39,7 @@ Existing tags (and their descriptions):
 - dynamical-system (dynamical system models)
 - efficiency (efficiency improvements)
 - energy-based-model (energy-based models)
+- first-principles (related to foundation and theory of AI)
 - multi-modal (multi-modal models)
 - neural-computation (neural computation techniques)
 - reasoning (reasoning or thinking techniques)
@@ -67,6 +68,8 @@ You will be given excerpt of an article.
 If this is not a research article, summarize the main key ideas.
 If this is a research article, summarize the problem, novel contribution (e.g. method), key results. keep only the most important details (e.g. a few points max for the contributions and results), and summarize the exact insight; don't just say "it introduced a new method", say what the method actually is (e.g. main technical details). don't just say "result is better than baseline", say how much it's better and what the values actually are.
 The format should be a markdown list. Use nested list (with tab indentation) if possible. Each list item should be extremely concise. Use inline latex (surrounded by $) for all math and symbolic expressions.
+
+Each part of your summary (e.g. problem, method, results, etc.) should be very concise, explain only what is novel and most important, the key idea that captures the value of this particular article. Omit minor details.
 """
 
 

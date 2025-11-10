@@ -11,5 +11,8 @@ cd "$SCRIPT_DIR/python" || exit 1
 PYTHON_SCRIPT="$1"
 shift
 
-# Run uv run with the script and pass remaining arguments
-uv run "$PYTHON_SCRIPT" "$@"
+# Strip .py extension if present
+PYTHON_SCRIPT="${PYTHON_SCRIPT%.py}"
+
+# Run uv run with the script as a module from the tommyx package
+uv run python -m "tommyx.$PYTHON_SCRIPT" "$@"
