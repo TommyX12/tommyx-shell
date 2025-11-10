@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
--run-tommyx-python-script obsidian_add_reading_note.py "$@"
