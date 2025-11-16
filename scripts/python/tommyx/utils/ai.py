@@ -5,8 +5,8 @@ from typing import Literal, Optional
 openai_client = OpenAI()
 
 class LLMConfig(BaseModel):
-    model: str = "gpt-5"
-    reasoning_effort: Literal["minimal", "low", "medium", "high"] = "minimal"
+    model: str = "gpt-5.1"
+    reasoning_effort: str = "low"
 
     class Config:
         frozen = True
