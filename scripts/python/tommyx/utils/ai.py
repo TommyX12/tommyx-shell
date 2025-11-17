@@ -1,6 +1,8 @@
 from openai import OpenAI, RateLimitError
 from pydantic import BaseModel
 from typing import Optional
+import difflib
+import json
 from claude_agent_sdk import query, ClaudeAgentOptions, ClaudeSDKClient, PermissionResultAllow, PermissionResultDeny
 
 openai_client = OpenAI()
@@ -51,12 +53,58 @@ class AgentConfig(BaseModel):
     load_user_settings: bool = True
     override_system_prompt: str | None = None
 
+def visualize_diff(old_string: str, new_string: str, file_path: str = ""):
+    """Visualize line-based and character-based diff between two strings."""
+    old_lines = old_string.splitlines(keepends=True)
+    new_lines = new_string.splitlines(keepends=True)
+    
+    # Line-based unified diff
+    print(f"\n   📝 Diff for {file_path if file_path else 'content'}:")
+    print("   " + "=" * 70)
+    
+    # Unified diff format (like git diff)
+    unified_diff = difflib.unified_diff(
+        old_lines,
+        new_lines,
+        fromfile=f"old: {file_path}" if file_path else "old",
+        tofile=f"new: {file_path}" if file_path else "new",
+        lineterm='',
+        n=5  # context lines
+    )
+    
+    for line in unified_diff:
+        line = line.rstrip()
+        if line.startswith('---') or line.startswith('+++'):
+            print(f"   {line}")
+        elif line.startswith('@@'):
+            print(f"   {line}")
+        elif line.startswith('-'):
+            print(f"   \033[91m{line}\033[0m")  # Red for deletions
+        elif line.startswith('+'):
+            print(f"   \033[92m{line}\033[0m")  # Green for additions
+        elif line.startswith(' '):
+            print(f"   {line}")
+    
+    print("   " + "=" * 70)
+
 async def run_agent(cwd: str, prompt: str, config: AgentConfig = AgentConfig()):
     async def prompt_for_tool_approval(tool_name: str, input_params: dict, context: dict):
         print(f"\n🔧 Tool Request:")
         print(f"   Tool: {tool_name}")
 
-        # Display parameters
+        original_input_params = input_params
+
+        # Special handling for Edit tool
+        if tool_name == "Edit" and "old_string" in input_params and "new_string" in input_params:
+            file_path = input_params.get("file_path", "")
+            old_string = input_params["old_string"]
+            new_string = input_params["new_string"]
+            
+            visualize_diff(old_string, new_string, file_path)
+            
+            # Still show other parameters if any
+            input_params = {k: v for k, v in input_params.items() if k not in ["old_string", "new_string", "file_path"]}
+
         if input_params:
             print("   Parameters:")
             for key, value in input_params.items():
@@ -74,7 +122,7 @@ async def run_agent(cwd: str, prompt: str, config: AgentConfig = AgentConfig()):
             print("   ✅ Approved\n")
             return PermissionResultAllow(
                 behavior="allow",
-                updated_input=input_params
+                updated_input=original_input_params
             )
         else:
             print("   ❌ Denied\n")
