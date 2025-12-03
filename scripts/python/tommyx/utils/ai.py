@@ -4,6 +4,9 @@ from typing import Optional
 import difflib
 import json
 from claude_agent_sdk import query, ClaudeAgentOptions, ClaudeSDKClient, PermissionResultAllow, PermissionResultDeny
+from rich.console import Console
+from rich.text import Text
+from rich.panel import Panel
 
 openai_client = OpenAI()
 
@@ -87,6 +90,55 @@ def visualize_diff(old_string: str, new_string: str, file_path: str = ""):
     
     print("   " + "=" * 70)
 
+def format_message(message, console: Console):
+    """Format and print messages nicely using rich."""
+    message_type = type(message).__name__
+    
+    if message_type == "AssistantMessage":
+        # Format AssistantMessage nicely
+        content_parts = []
+        
+        if hasattr(message, 'content') and message.content:
+            for block in message.content:
+                block_type = type(block).__name__
+                
+                if block_type == "TextBlock":
+                    if hasattr(block, 'text'):
+                        content_parts.append(block.text)
+                elif block_type == "ToolUseBlock":
+                    tool_name = getattr(block, 'name', 'Unknown Tool')
+                    tool_id = getattr(block, 'id', '')
+                    tool_input = getattr(block, 'input', {})
+                    
+                    tool_info = f"🔧 {tool_name}"
+                    if tool_input:
+                        # Format tool input nicely
+                        input_str = json.dumps(tool_input, indent=2)
+                        if len(input_str) > 200:
+                            input_str = input_str[:200] + "..."
+                        tool_info += f"\n   Input: {input_str}"
+                    
+                    content_parts.append(tool_info)
+                else:
+                    # For other block types, show a representation
+                    content_parts.append(f"[{block_type}] {str(block)}")
+        
+        if content_parts:
+            content = "\n\n".join(content_parts)
+            console.print(Panel(content, title="[bold cyan]Assistant[/bold cyan]", border_style="cyan"))
+        else:
+            console.print(Panel(str(message), title="[bold cyan]Assistant[/bold cyan]", border_style="cyan"))
+    
+    elif message_type == "SystemMessage":
+        console.print(f"[dim yellow](system message received)[/dim yellow]")
+    
+    elif message_type == "UserMessage":
+        console.print(f"[dim blue](user message received)[/dim blue]")
+    
+    else:
+        # Unrecognized message type - print directly
+        console.print(str(message))
+
 async def run_agent(cwd: str, prompt: str, config: AgentConfig = AgentConfig()):
     async def prompt_for_tool_approval(tool_name: str, input_params: dict, context: dict):
         print(f"\n🔧 Tool Request:")
@@ -152,9 +204,10 @@ async def run_agent(cwd: str, prompt: str, config: AgentConfig = AgentConfig()):
         can_use_tool=prompt_for_tool_approval,
     )
 
+    console = Console()
+    
     async with ClaudeSDKClient(options=options) as client:
         await client.query(prompt)
 
         async for message in client.receive_response():
-            # TODO: print nicely
-            print(message)
+            format_message(message, console)

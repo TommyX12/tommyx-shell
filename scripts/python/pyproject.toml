@@ -11,6 +11,7 @@ dependencies = [
     "openai>=2.2.0",
     "pydantic>=2.0.0",
     "requests>=2.32.5",
+    "rich>=14.2.0",
     "todoist-api-python>=3.1.0",
 ]
 
