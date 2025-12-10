@@ -39,9 +39,9 @@ source $ZSH/oh-my-zsh.sh
 [ -f /opt/homebrew/opt/fzf/shell/completion.zsh ] && source /opt/homebrew/opt/fzf/shell/completion.zsh
 
 # fuck
-if type thefuck > /dev/null; then
-    eval $(thefuck --alias f)
-fi
+# if type thefuck > /dev/null; then
+#     eval $(thefuck --alias f)
+# fi
 
 # increase number of open files
 alias emacs="ulimit -n 16384 && emacs"
@@ -52,6 +52,9 @@ alias e="emacsclient -n "
 alias l="eza -a"
 alias la="eza -la"
 alias i="sgpt"
+alias f="vifm"
+alias v="nvim"
+alias g="lazygit"
 
 # temperature
 alias temperature="sysctl machdep.xcpm.cpu_thermal_level; sysctl machdep.xcpm.gpu_thermal_level"
