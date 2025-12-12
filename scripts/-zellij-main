@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -e
+
+zellij -l default a -c main "$@"

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -e
+
+osascript <<EOF
+tell application "Google Chrome"
+    activate
+    tell front window to make new tab
+end tell
+EOF

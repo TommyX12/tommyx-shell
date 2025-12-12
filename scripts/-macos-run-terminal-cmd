@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -e
+
+osascript -e 'tell application "iTerm2" to activate'
+PATH=/opt/homebrew/bin:$PATH zellij -s main run "$@"

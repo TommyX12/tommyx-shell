@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -e
+
+TAB_INDEX="$1"
+
+osascript <<EOF
+tell application "Google Chrome"
+    activate
+    set active tab index of front window to $TAB_INDEX
+end tell
+EOF
