@@ -135,38 +135,38 @@ def format_message(message, console: Console):
     elif message_type == "UserMessage":
         console.print(f"[dim blue](user message received)[/dim blue]")
     
-    # elif message_type == "ResultMessage":
-    #     # Format ResultMessage nicely
-    #     result = getattr(message, 'result', '')
-    #     subtype = getattr(message, 'subtype', '')
-    #     duration_ms = getattr(message, 'duration_ms', None)
-    #     total_cost_usd = getattr(message, 'total_cost_usd', None)
-    #     is_error = getattr(message, 'is_error', False)
-    #     num_turns = getattr(message, 'num_turns', None)
+    elif message_type == "ResultMessage":
+        # Format ResultMessage nicely
+        subtype = getattr(message, 'subtype', '')
+        duration_ms = getattr(message, 'duration_ms', None)
+        total_cost_usd = getattr(message, 'total_cost_usd', None)
+        is_error = getattr(message, 'is_error', False)
+        result = '(message content omitted)' if not is_error else getattr(message, 'result', '')
+        num_turns = getattr(message, 'num_turns', None)
         
-    #     # Build metadata string
-    #     metadata_parts = []
-    #     if subtype:
-    #         status_emoji = "❌" if is_error else "✅"
-    #         metadata_parts.append(f"{status_emoji} {subtype}")
-    #     if duration_ms is not None:
-    #         duration_sec = duration_ms / 1000
-    #         metadata_parts.append(f"Duration: {duration_sec:.1f}s")
-    #     if total_cost_usd is not None:
-    #         metadata_parts.append(f"Cost: ${total_cost_usd:.6f}")
-    #     if num_turns is not None:
-    #         metadata_parts.append(f"Turns: {num_turns}")
+        # Build metadata string
+        metadata_parts = []
+        if subtype:
+            status_emoji = "❌" if is_error else "✅"
+            metadata_parts.append(f"{status_emoji} {subtype}")
+        if duration_ms is not None:
+            duration_sec = duration_ms / 1000
+            metadata_parts.append(f"Duration: {duration_sec:.1f}s")
+        if total_cost_usd is not None:
+            metadata_parts.append(f"Cost: ${total_cost_usd:.6f}")
+        if num_turns is not None:
+            metadata_parts.append(f"Turns: {num_turns}")
         
-    #     metadata = " | ".join(metadata_parts) if metadata_parts else ""
+        metadata = " | ".join(metadata_parts) if metadata_parts else ""
         
-    #     # Show result in a panel
-    #     if result:
-    #         title = "[bold green]Result[/bold green]"
-    #         if metadata:
-    #             title += f" - {metadata}"
-    #         console.print(Panel(result, title=title, border_style="green"))
-    #     else:
-    #         console.print(f"[dim green](result message received - {metadata})[/dim green]")
+        # Show result in a panel
+        if result:
+            title = "[bold green]Result[/bold green]"
+            if metadata:
+                title += f" - {metadata}"
+            console.print(Panel(result, title=title, border_style="green"))
+        else:
+            console.print(f"[dim green](result message received - {metadata})[/dim green]")
     
     else:
         # Unrecognized message type - print directly
