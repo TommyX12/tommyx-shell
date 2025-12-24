@@ -80,7 +80,7 @@ cl () {
         } \
         | sort \
         | fzf --height=40 --layout=reverse --border \
-            --preview 'ls -la "$base"/{} | head -40' \
+            --preview "ls -la \"$base\"/{}  | head -40" \
             --preview-window=right:50%
     )" || return
 
