@@ -12,6 +12,8 @@ import pydantic
 VERBOSE = False
 # pull-only flag, controlled via command-line
 PULL_ONLY = False
+# max workers, controlled via command-line
+MAX_WORKERS = 16
 
 REPOS_TO_CHECK = [
     "~/data/*",
@@ -152,7 +154,7 @@ def main():
     action_needed = []
 
     # Use parallel processing for initial scan with max 8 workers
-    max_workers = min(8, len(repos))
+    max_workers = min(MAX_WORKERS, len(repos))
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         # Submit all repo status checks
         future_to_repo = {executor.submit(check_repo_status, repo): repo for repo in repos}
@@ -272,9 +274,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Check repo status and push changes")
     parser.add_argument("-v", "--verbose", action="store_true", help="enable verbose output")
     parser.add_argument("--pull-only", action="store_true", help="only pull changes from remote repos, skip all push operations")
+    parser.add_argument("--max-workers", type=int, default=MAX_WORKERS, help="maximum number of workers to use for parallel processing")
     args = parser.parse_args()
     # set global flags
     VERBOSE = args.verbose
     PULL_ONLY = args.pull_only
+    MAX_WORKERS = args.max_workers
 
     main()
