@@ -98,15 +98,15 @@ def get_git_dirty_text(cwd=None):
     return None
 
 
-def check_upstream_commits(cwd=None):
+def check_upstream_commits(repo_path):
     try:
-        run_command("git fetch origin", cwd=cwd)
-        outtext, _ = run_command("git rev-list --count HEAD..@{u}", check=False, cwd=cwd)
+        run_command("git fetch origin", cwd=repo_path)
+        outtext, _ = run_command("git rev-list --count HEAD..@{u}", check=False, cwd=repo_path)
         count = int(outtext.strip()) if outtext.strip().isdigit() else 0
         return count
 
     except Exception as e:
-        print(f"Failed to check upstream: {e}")
+        print(f"Failed to check upstream {format_repo(repo_path)}: {e}")
         return 0
 
 
@@ -134,7 +134,7 @@ def check_repo_status(repo_path):
         config = get_repo_config(repo_path)
         needs_action = False
 
-        if get_git_dirty_text(cwd=repo_path) is not None or check_upstream_commits(cwd=repo_path) > 0:
+        if get_git_dirty_text(cwd=repo_path) is not None or check_upstream_commits(repo_path) > 0:
             needs_action = True
 
         return repo_path, needs_action, config
@@ -179,7 +179,7 @@ def main():
         config = repo_configs[p]
         print(f"REPO: {format_repo(p)}")
 
-        upstream_count = check_upstream_commits(cwd=p)
+        upstream_count = check_upstream_commits(p)
         if upstream_count > 0:
             if config.auto_pull or yn_question(f"There are {upstream_count} commits upstream. Run git pull --ff-only?"):  # noqa
                 try:
