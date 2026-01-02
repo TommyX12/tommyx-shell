@@ -19,6 +19,14 @@ sudo apt install \
     eza \
     -y
 
+# zellij install
+
+arch=$(uname -m)
+curl -LO "https://github.com/zellij-org/zellij/releases/latest/download/zellij-${arch}-unknown-linux-musl.tar.gz"
+tar -xf zellij-${arch}-unknown-linux-musl.tar.gz
+sudo mv zellij /bin/zellij
+rm zellij-${arch}-unknown-linux-musl.tar.gz
+
 # shell
 
 (cd ~/data && git clone https://github.com/TommyX12/tommyx-shell.git)
