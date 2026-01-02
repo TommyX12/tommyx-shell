@@ -33,9 +33,9 @@
                 (Seems like no need to follow instruction for wezterm)
 - Install plugins (using zsh)
     - `git clone https://github.com/zsh-users/zsh-autosuggestions.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"`
-    - `git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting"`
-    - `git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autocomplete"`
-    - `git clone https://www.github.com/KulkarniKaustubh/fzf-dir-navigator "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-dir-navigator"`
+    - `git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting"`
+    - `git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autocomplete"`
+    - `git clone https://www.github.com/KulkarniKaustubh/fzf-dir-navigator "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fzf-dir-navigator"`
 - Install dependencies for Python scripts
     - Install [uv](https://docs.astral.sh/uv/getting-started/installation/)
 - Install `tommyx_py_utils`

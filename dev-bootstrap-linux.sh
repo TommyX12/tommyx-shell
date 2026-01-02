@@ -29,11 +29,11 @@ git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 ## nvim (must be after oh-my-zsh because of PATH update)
 
 arch=$(uname -m)
-curl -LO "https://github.com/neovim/neovim/releases/latest/download/nvim-linux-${arch}.appimage"
-chmod u+x nvim-linux-${arch}.appimage
-mkdir -p /opt/nvim
-mv nvim-linux-${arch}.appimage /opt/nvim/nvim
-echo 'export PATH="$PATH:/opt/nvim/"' >> ~/.zshrc
+
+curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-${arch}.tar.gz
+sudo rm -rf /opt/nvim-linux-${arch}
+sudo tar -C /opt -xzf nvim-linux-${arch}.tar.gz
+echo "export PATH=\"\$PATH:/opt/nvim-linux-${arch}/bin\"" >> ~/.zshrc
 
 ## zellij
 
@@ -63,9 +63,9 @@ mkdir -p ~/data
 
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
 git clone https://github.com/zsh-users/zsh-autosuggestions.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
-git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting"
-git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autocomplete"
-git clone https://www.github.com/KulkarniKaustubh/fzf-dir-navigator "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-dir-navigator"
+git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting"
+git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autocomplete"
+git clone https://www.github.com/KulkarniKaustubh/fzf-dir-navigator "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fzf-dir-navigator"
 
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
