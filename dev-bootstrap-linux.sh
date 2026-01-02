@@ -12,8 +12,6 @@ sudo apt install \
     ripgrep \
     fd-find \
     neovim \
-    zellij \
-    lazygit \
     btop \
     zsh \
     eza \
@@ -26,6 +24,14 @@ curl -LO "https://github.com/zellij-org/zellij/releases/latest/download/zellij-$
 tar -xf zellij-${arch}-unknown-linux-musl.tar.gz
 sudo mv zellij /bin/zellij
 rm zellij-${arch}-unknown-linux-musl.tar.gz
+
+# lazygit install
+
+LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | \grep -Po '"tag_name": *"v\K[^"]*')
+curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
+tar xf lazygit.tar.gz lazygit
+sudo install lazygit -D -t /usr/local/bin/
+rm lazygit.tar.gz lazygit
 
 # shell
 
