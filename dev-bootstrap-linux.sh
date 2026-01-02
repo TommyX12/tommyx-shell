@@ -4,20 +4,38 @@ set -euxo pipefail
 
 # dependencies
 
+## apt packages
+
 sudo apt update
 sudo apt install \
     git \
     vifm \
-    fzf \
     ripgrep \
     fd-find \
-    neovim \
     btop \
     zsh \
     eza \
     -y
 
-# zellij install
+## fzf
+
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+~/.fzf/install
+
+## nvim
+
+arch=$(uname -m)
+curl -LO "https://github.com/neovim/neovim/releases/latest/download/nvim-linux-${arch}.appimage"
+chmod u+x nvim-linux-${arch}.appimage
+mkdir -p /opt/nvim
+mv nvim-linux-${arch}.appimage /opt/nvim/nvim
+echo 'export PATH="$PATH:/opt/nvim/"' >> ~/.zshrc
+
+## oh-my-zsh
+
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+
+## zellij
 
 arch=$(uname -m)
 curl -LO "https://github.com/zellij-org/zellij/releases/latest/download/zellij-${arch}-unknown-linux-musl.tar.gz"
@@ -25,7 +43,7 @@ tar -xf zellij-${arch}-unknown-linux-musl.tar.gz
 sudo mv zellij /bin/zellij
 rm zellij-${arch}-unknown-linux-musl.tar.gz
 
-# lazygit install
+## lazygit
 
 LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | \grep -Po '"tag_name": *"v\K[^"]*')
 curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
@@ -33,11 +51,16 @@ tar xf lazygit.tar.gz lazygit
 sudo install lazygit -D -t /usr/local/bin/
 rm lazygit.tar.gz lazygit
 
+# data directory
+
+mkdir -p ~/data
+
 # shell
 
 (cd ~/data && git clone https://github.com/TommyX12/tommyx-shell.git)
 
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+## plugins
+
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
 git clone https://github.com/zsh-users/zsh-autosuggestions.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
 git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting"
