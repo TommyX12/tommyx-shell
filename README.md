@@ -32,10 +32,10 @@
                 ```
                 (Seems like no need to follow instruction for wezterm)
 - Install plugins (using zsh)
-    - `git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions`
-    - `git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git $ZSH_CUSTOM/plugins/fast-syntax-highlighting`
-    - `git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git $ZSH_CUSTOM/plugins/zsh-autocomplete`
-    - `git clone https://www.github.com/KulkarniKaustubh/fzf-dir-navigator ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-dir-navigator`
+    - `git clone https://github.com/zsh-users/zsh-autosuggestions.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"`
+    - `git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting"`
+    - `git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autocomplete"`
+    - `git clone https://www.github.com/KulkarniKaustubh/fzf-dir-navigator "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-dir-navigator"`
 - Install dependencies for Python scripts
     - Install [uv](https://docs.astral.sh/uv/getting-started/installation/)
 - Install `tommyx_py_utils`
@@ -45,7 +45,7 @@
     - Linux: `pip3 install shell-gpt`
     - Ensure `export OPENAI_API_KEY=<your-openai-api-key>` is in `~/.zshrc`
 - Add to `~/.zshrc` (replacing existing setup parts):
-    - `source <path-to-repo>/tommyx-shell.sh`
-    - `export PATH="$PATH:<path-to-repo>/scripts"` (note: use `$HOME` instead of `~` in the path)
+    - `source ~/data/tommyx-shell/tommyx-shell.sh`
+    - `export PATH="$PATH:$HOME/data/tommyx-shell/scripts"` (note: use `$HOME` instead of `~` in the path)
 - Install lazygit
     - `brew install lazygit` (MacOS)

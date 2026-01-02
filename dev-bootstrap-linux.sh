@@ -6,6 +6,7 @@ set -euxo pipefail
 
 sudo apt update
 sudo apt install \
+    git \
     vifm \
     fzf \
     ripgrep \
@@ -23,7 +24,16 @@ sudo apt install \
 (cd ~/data && git clone https://github.com/TommyX12/tommyx-shell.git)
 
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-# TODO not finished yet
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+git clone https://github.com/zsh-users/zsh-autosuggestions.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
+git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting"
+git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autocomplete"
+git clone https://www.github.com/KulkarniKaustubh/fzf-dir-navigator "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-dir-navigator"
+
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+echo 'source ~/data/tommyx-shell/tommyx-shell.sh' >> ~/.zshrc
+echo 'export PATH="$PATH:$HOME/data/tommyx-shell/scripts"' >> ~/.zshrc
 
 # vifm
 
