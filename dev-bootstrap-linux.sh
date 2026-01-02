@@ -17,12 +17,16 @@ sudo apt install \
     eza \
     -y
 
-## fzf
+## oh-my-zsh
+
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+
+## fzf (must be after oh-my-zsh)
 
 git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-~/.fzf/install
+~/.fzf/install --all
 
-## nvim
+## nvim (must be after oh-my-zsh because of PATH update)
 
 arch=$(uname -m)
 curl -LO "https://github.com/neovim/neovim/releases/latest/download/nvim-linux-${arch}.appimage"
@@ -30,10 +34,6 @@ chmod u+x nvim-linux-${arch}.appimage
 mkdir -p /opt/nvim
 mv nvim-linux-${arch}.appimage /opt/nvim/nvim
 echo 'export PATH="$PATH:/opt/nvim/"' >> ~/.zshrc
-
-## oh-my-zsh
-
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
 ## zellij
 
