@@ -2,12 +2,17 @@
 
 set -euxo pipefail
 
+if [[ "$EUID" -ne 0 ]]; then
+    echo "This script must be run as root" >&2
+    exit 1
+fi
+
 # dependencies
 
 ## apt packages
 
-sudo apt update
-sudo apt install \
+apt update
+apt install \
     git \
     vifm \
     ripgrep \
@@ -31,8 +36,8 @@ git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 arch=$(uname -m)
 
 curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-${arch}.tar.gz
-sudo rm -rf /opt/nvim-linux-${arch}
-sudo tar -C /opt -xzf nvim-linux-${arch}.tar.gz
+rm -rf /opt/nvim-linux-${arch}
+tar -C /opt -xzf nvim-linux-${arch}.tar.gz
 echo "export PATH=\"\$PATH:/opt/nvim-linux-${arch}/bin\"" >> ~/.zshrc
 
 ## zellij
@@ -40,7 +45,7 @@ echo "export PATH=\"\$PATH:/opt/nvim-linux-${arch}/bin\"" >> ~/.zshrc
 arch=$(uname -m)
 curl -LO "https://github.com/zellij-org/zellij/releases/latest/download/zellij-${arch}-unknown-linux-musl.tar.gz"
 tar -xf zellij-${arch}-unknown-linux-musl.tar.gz
-sudo mv zellij /bin/zellij
+mv zellij /bin/zellij
 rm zellij-${arch}-unknown-linux-musl.tar.gz
 
 ## lazygit
@@ -48,7 +53,7 @@ rm zellij-${arch}-unknown-linux-musl.tar.gz
 LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | \grep -Po '"tag_name": *"v\K[^"]*')
 curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
 tar xf lazygit.tar.gz lazygit
-sudo install lazygit -D -t /usr/local/bin/
+install lazygit -D -t /usr/local/bin/
 rm lazygit.tar.gz lazygit
 
 # data directory
