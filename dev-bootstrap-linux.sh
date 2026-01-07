@@ -20,6 +20,7 @@ apt install \
     btop \
     zsh \
     eza \
+    nvtop \
     -y
 
 ## oh-my-zsh
