@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -ex
+
+APP_NAME="Mos"
+
+# Kill Mos if it's running
+if pgrep -x "$APP_NAME" > /dev/null; then
+  echo "Mos is running. Killing it..."
+  pkill -x "$APP_NAME"
+  # small delay to ensure it's fully terminated
+  sleep 0.5
+else
+  echo "Mos is not running."
+fi
+
+# Launch Mos
+echo "Launching Mos..."
+open -a "$APP_NAME"
