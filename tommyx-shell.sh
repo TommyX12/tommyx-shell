@@ -104,7 +104,7 @@ _sgpt_zsh_shell() {
     fi
 }
 zle -N _sgpt_zsh_shell
-bindkey '^s' _sgpt_zsh_shell
+bindkey '^y' _sgpt_zsh_shell
 
 # TODO add config for checking if my projects and configs need sync
 
