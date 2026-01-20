@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -e
+
+du -ah --max-depth=1 | sort -hr
