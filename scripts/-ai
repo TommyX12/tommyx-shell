@@ -64,7 +64,7 @@ fi
 
 # Run adapter: pipe file content if non-empty, otherwise just call
 if grep -q '[^[:space:]]' "$tmpfile" 2>/dev/null; then
-  cat "$tmpfile" | "$SCRIPT_DIR/-ai-agent-adapter" "${adapter_args[@]}" "$@"
+  cat "$tmpfile" | -ai-agent-adapter "${adapter_args[@]}" "$@"
 else
-  "$SCRIPT_DIR/-ai-agent-adapter" "${adapter_args[@]}" "$@"
+  -ai-agent-adapter "${adapter_args[@]}" "$@"
 fi
