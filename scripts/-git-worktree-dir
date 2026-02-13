@@ -1,0 +1,4 @@
+#!/bin/bash
+# Prints the worktrees directory (<main_repo>-worktrees) for the current git repo.
+echo "$(-git-main-repo)-worktrees"
+

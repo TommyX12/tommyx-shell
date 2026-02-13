@@ -1,0 +1,83 @@
+#!/bin/bash
+# Removes worktrees whose remote branches have been deleted (i.e. merged on GitHub).
+set -e
+
+main_repo="$(-git-main-repo)"
+worktrees_dir="$(-git-worktrees-dir)"
+
+if [[ ! -d "$worktrees_dir" ]]; then
+  echo "No worktrees directory found at $worktrees_dir"
+  exit 0
+fi
+
+# Prune stale remote-tracking refs (no fetching)
+remotes_to_prune=()
+branches=()
+upstreams=()
+for d in "$worktrees_dir"/*/; do
+  [[ -d "$d" ]] || continue
+  branch="$(basename "${d%/}")"
+  remote=$(git -C "$main_repo" config "branch.$branch.remote" 2>/dev/null || true)
+  merge=$(git -C "$main_repo" config "branch.$branch.merge" 2>/dev/null || true)
+  if [[ -n "$remote" && -n "$merge" ]]; then
+    upstream="$remote/${merge#refs/heads/}"
+  else
+    upstream=""
+  fi
+  branches+=("$branch")
+  upstreams+=("$upstream")
+  if [[ -n "$upstream" ]]; then
+    remotes_to_prune+=("${upstream%%/*}")
+  fi
+done
+
+for remote in $(printf '%s\n' "${remotes_to_prune[@]}" | sort -u); do
+  git -C "$main_repo" remote prune "$remote"
+done
+
+to_remove=()
+for i in "${!branches[@]}"; do
+  branch="${branches[$i]}"
+  upstream="${upstreams[$i]}"
+
+  if [[ -z "$upstream" ]]; then
+    echo "skip: $branch (no upstream)"
+    continue
+  fi
+
+  # Skip if upstream branch still exists
+  if git -C "$main_repo" rev-parse --verify "refs/remotes/$upstream" &>/dev/null; then
+    echo "skip: $branch (upstream $upstream still exists)"
+    continue
+  fi
+
+  to_remove+=("$branch")
+done
+
+if [[ ${#to_remove[@]} -eq 0 ]]; then
+  echo "Nothing to clean up."
+  exit 0
+fi
+
+echo ""
+echo "Worktrees to remove (remote branch deleted):"
+for branch in "${to_remove[@]}"; do
+  echo "  $branch"
+done
+
+echo ""
+read -rp "Remove these worktrees? [y/N] " answer
+if [[ "$answer" != "y" ]]; then
+  echo "Aborted."
+  exit 0
+fi
+
+for branch in "${to_remove[@]}"; do
+  echo "removing $branch ..."
+  git -C "$main_repo" worktree remove "$worktrees_dir/$branch"
+  git -C "$main_repo" branch -D "$branch"
+done
+
+git -C "$main_repo" worktree prune
+echo "Done."
+

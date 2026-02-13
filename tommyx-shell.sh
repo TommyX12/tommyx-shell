@@ -93,6 +93,35 @@ cl () {
     fi
 }
 
+-git-select-worktree() {
+  local main_repo worktrees_dir items choice
+  main_repo="$(-git-main-repo)"
+  worktrees_dir="$(-git-worktrees-dir)"
+  
+  items=("[main_repo]")
+  if [[ -d "$worktrees_dir" ]]; then
+    for d in "$worktrees_dir"/*/; do
+      [[ -d "$d" ]] && items+=("$(basename "${d%/}")")
+    done
+  fi
+  
+  choice=$(printf '%s\n' "${items[@]}" | fzf --height=40 --layout=reverse --border \
+    --preview '
+      if [[ {} == "[main_repo]" ]]; then
+        git -C "'"$main_repo"'" log --oneline --color=always -n 16
+      else
+        git -C "'"$worktrees_dir"'/{}" log --oneline --color=always -n 16
+      fi
+    ' \
+    --preview-window=right:50%) || return 0
+  
+  if [[ "$choice" == "[main_repo]" ]]; then
+    cd "$main_repo"
+  else
+    cd "$worktrees_dir/$choice"
+  fi
+}
+
 # Shell-GPT integration
 _sgpt_zsh_shell() {
     if [[ -n "$BUFFER" ]]; then
