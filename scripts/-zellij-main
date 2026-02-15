@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 set -e
 
-zellij -l ~/data/tommyx-zellij-config/layouts/main.kdl a -c main "$@"
+zellij -l ~/data/tommyx-zellij-config/layouts/main.kdl a -c "main-$(hostname -s)" "$@"
