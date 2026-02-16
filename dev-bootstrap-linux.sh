@@ -19,9 +19,13 @@ apt install \
     fd-find \
     btop \
     zsh \
-    eza \
     nvtop \
     -y
+
+# eza may not be available on all distros/versions
+if apt-cache show eza &>/dev/null; then
+    apt install eza -y
+fi
 
 ## oh-my-zsh
 
