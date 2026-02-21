@@ -24,9 +24,16 @@ if [[ "$accept_edits" == true ]]; then
   adapter_args+=("--permission-mode" "acceptEdits")
 fi
 
-# Edit temp file first so user can write while worktree/agent sets up
-tmpfile="$(mktemp).md"
-"${EDITOR:-vim}" "$tmpfile"
+# Create prompt file with timestamp and tag
+mkdir -p ~/ai-prompts
+folder_name="$(basename "$(pwd)")"
+if [[ -n "$branch_name" ]]; then
+  tag="${folder_name}_${branch_name}"
+else
+  tag="$folder_name"
+fi
+prompt_file=~/ai-prompts/"$(date '+%Y-%m-%d_%H-%M-%S')_${tag}.md"
+"${EDITOR:-vim}" "$prompt_file"
 
 # Handle worktree
 if [[ -n "$branch_name" ]]; then
@@ -63,8 +70,8 @@ if [[ -n "$branch_name" ]]; then
 fi
 
 # Run adapter: pipe file content if non-empty, otherwise just call
-if grep -q '[^[:space:]]' "$tmpfile" 2>/dev/null; then
-  cat "$tmpfile" | -ai-agent-adapter "${adapter_args[@]}" "$@"
+if grep -q '[^[:space:]]' "$prompt_file" 2>/dev/null; then
+  cat "$prompt_file" | -ai-agent-adapter "${adapter_args[@]}" "$@"
 else
   -ai-agent-adapter "${adapter_args[@]}" "$@"
 fi
