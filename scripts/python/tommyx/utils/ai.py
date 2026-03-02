@@ -4,6 +4,9 @@ from typing import Optional
 import difflib
 import json
 from claude_agent_sdk import query, ClaudeAgentOptions, ClaudeSDKClient, PermissionResultAllow, PermissionResultDeny
+from claude_agent_sdk._errors import MessageParseError
+from claude_agent_sdk._internal.message_parser import parse_message
+from claude_agent_sdk.types import ResultMessage
 from rich.console import Console
 from rich.text import Text
 from rich.panel import Panel
@@ -242,5 +245,12 @@ async def run_agent(cwd: str, prompt: str, config: AgentConfig = AgentConfig()):
     async with ClaudeSDKClient(options=options) as client:
         await client.query(prompt)
 
-        async for message in client.receive_response():
+        async for data in client._query.receive_messages():
+            try:
+                message = parse_message(data)
+            except MessageParseError:
+                console.print(f"[yellow]Warning: unknown message type '{data.get('type')}', skipping[/yellow]")
+                continue
             format_message(message, console)
+            if isinstance(message, ResultMessage):
+                return
