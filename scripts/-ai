@@ -7,16 +7,17 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 accept_edits=false
 branch_name=""
 base=""
+passthrough_args=()
 
-while getopts "an:b:" opt; do
-  case "$opt" in
-    a) accept_edits=true ;;
-    n) branch_name="$OPTARG" ;;
-    b) base="$OPTARG" ;;
-    *) echo "Usage: -ai [-a] [-n branch_name] [-b base]" >&2; exit 1 ;;
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -a) accept_edits=true; shift ;;
+    -n) branch_name="$2"; shift 2 ;;
+    -b) base="$2"; shift 2 ;;
+    --) shift; passthrough_args+=("$@"); break ;;
+    *) passthrough_args+=("$1"); shift ;;
   esac
 done
-shift $((OPTIND - 1))
 
 # Build adapter args
 adapter_args=()
@@ -71,7 +72,7 @@ fi
 
 # Run adapter: pipe file content if non-empty, otherwise just call
 if grep -q '[^[:space:]]' "$prompt_file" 2>/dev/null; then
-  cat "$prompt_file" | -ai-agent-adapter "${adapter_args[@]}" "$@"
+  cat "$prompt_file" | -ai-agent-adapter "${adapter_args[@]}" "${passthrough_args[@]}"
 else
-  -ai-agent-adapter "${adapter_args[@]}" "$@"
+  -ai-agent-adapter "${adapter_args[@]}" "${passthrough_args[@]}"
 fi
