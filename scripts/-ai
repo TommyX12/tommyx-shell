@@ -9,11 +9,14 @@ branch_name=""
 base=""
 passthrough_args=()
 
+reuse_prompt=false
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     -a) accept_edits=true; shift ;;
     -n) branch_name="$2"; shift 2 ;;
     -b) base="$2"; shift 2 ;;
+    -r) reuse_prompt=true; shift ;;
     --) shift; passthrough_args+=("$@"); break ;;
     *) passthrough_args+=("$1"); shift ;;
   esac
@@ -34,6 +37,25 @@ else
   tag="$folder_name"
 fi
 prompt_file=~/ai-prompts/"$(date '+%Y-%m-%d_%H-%M-%S')_${tag}.md"
+
+# If -r, let user pick a past prompt via fzf
+if [[ "$reuse_prompt" == true ]]; then
+  past_prompts=$(ls -t ~/ai-prompts/*.md 2>/dev/null || true)
+  if [[ -n "$past_prompts" ]]; then
+    selected=$(
+      {
+        echo "[new prompt]"
+        echo "$past_prompts"
+      } | fzf --height=40 --layout=reverse --border \
+              --preview='[[ {} == "[new prompt]" ]] && echo "(empty)" || cat {}' \
+              --preview-window=right:60%
+    ) || exit 0
+    if [[ "$selected" != "[new prompt]" ]]; then
+      cp "$selected" "$prompt_file"
+    fi
+  fi
+fi
+
 "${EDITOR:-vim}" "$prompt_file"
 
 # Handle worktree
