@@ -1,3 +1,3 @@
 #!/bin/bash
-exec claude --model opus "$@"
+exec claude --model opus --allow-dangerously-skip-permissions "$@"
 
