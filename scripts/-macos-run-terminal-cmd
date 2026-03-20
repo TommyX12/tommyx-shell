@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 set -e
 
-osascript -e 'tell application "iTerm2" to activate'
+osascript -e '
+tell application "iTerm2"
+    activate
+    tell current window
+        select first tab
+    end tell
+end tell
+'
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PATH=/opt/homebrew/bin:$PATH zellij -s "$("$SCRIPT_DIR/-zellij-main-session-name")" run "$@"
