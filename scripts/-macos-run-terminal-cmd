@@ -2,4 +2,5 @@
 set -e
 
 osascript -e 'tell application "iTerm2" to activate'
-PATH=/opt/homebrew/bin:$PATH zellij -s "main-$(hostname -s)" run "$@"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PATH=/opt/homebrew/bin:$PATH zellij -s "$("$SCRIPT_DIR/-zellij-main-session-name")" run "$@"

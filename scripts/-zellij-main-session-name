@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -e
+
+name_file="$HOME/.zellij-main-session-name"
+if [[ -f "$name_file" ]]; then
+    suffix="$(tr -d '[:space:]' < "$name_file")"
+    if [[ -n "$suffix" ]]; then
+        echo "main-$suffix"
+        exit 0
+    fi
+fi
+
+echo "main"
