@@ -105,15 +105,18 @@ cl () {
     done
   fi
   
+  export _fzf_main_repo="$main_repo"
+  export _fzf_worktrees_dir="$worktrees_dir"
   choice=$(printf '%s\n' "${items[@]}" | fzf --height=40 --layout=reverse --border \
     --preview '
       if [[ {} == "[main_repo]" ]]; then
-        git -C "'"$main_repo"'" log --oneline --color=always -n 16
+        git -C "$_fzf_main_repo" log --oneline --color=always -n 16
       else
-        git -C "'"$worktrees_dir"'/{}" log --oneline --color=always -n 16
+        git -C "$_fzf_worktrees_dir/"{} log --oneline --color=always -n 16
       fi
     ' \
-    --preview-window=right:50%) || return 0
+    --preview-window=right:50%) || { unset _fzf_main_repo _fzf_worktrees_dir; return 0; }
+  unset _fzf_main_repo _fzf_worktrees_dir
   
   if [[ "$choice" == "[main_repo]" ]]; then
     cd "$main_repo"
