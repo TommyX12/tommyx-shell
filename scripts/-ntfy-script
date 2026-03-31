@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Called by the -ntfy shell function. Do not call directly.
+# Usage:
+#   -ntfy "message"                  Send a plain message
+#   command; -ntfy -c "prefix"       Report success/failure of previous command
+
+if [ -z "$NTFY_TOPIC_NAME" ]; then
+  echo "Error: NTFY_TOPIC_NAME is not set" >&2
+  exit 1
+fi
+
+if [ $# -eq 0 ]; then
+  echo 'Usage: -ntfy "message"' >&2
+  echo '       command; -ntfy -c "prefix"' >&2
+  exit 1
+fi
+
+if [ "$1" = "-c" ]; then
+  shift
+  PREFIX="${1:-command}"
+  if [ "$NTFY_REPORT_EXIT_CODE" -eq 0 ] 2>/dev/null; then
+    curl -s -d "$PREFIX: succeeded" "ntfy.sh/$NTFY_TOPIC_NAME" > /dev/null
+  else
+    curl -s -d "$PREFIX: failed (exit $NTFY_REPORT_EXIT_CODE)" "ntfy.sh/$NTFY_TOPIC_NAME" > /dev/null
+  fi
+else
+  curl -s -d "$1" "ntfy.sh/$NTFY_TOPIC_NAME" > /dev/null
+fi

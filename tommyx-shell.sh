@@ -198,3 +198,6 @@ fzf_cmd_widget() {
 }
 zle -N fzf_cmd_widget
 bindkey '^a' fzf_cmd_widget
+
+# ntfy wrapper: captures $? from the previous command so `-ntfy-script` can report it
+-ntfy() { local ec=$?; NTFY_REPORT_EXIT_CODE=$ec -ntfy-script "$@"; }
