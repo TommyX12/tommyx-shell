@@ -16,14 +16,19 @@ if [ $# -eq 0 ]; then
   exit 1
 fi
 
+AUTH_ARGS=()
+if [ -n "$NTFY_API_TOKEN" ]; then
+  AUTH_ARGS=(-H "Authorization: Bearer $NTFY_API_TOKEN")
+fi
+
 if [ "$1" = "-c" ]; then
   shift
   PREFIX="${1:-command}"
   if [ "$NTFY_REPORT_EXIT_CODE" -eq 0 ] 2>/dev/null; then
-    curl -s -d "$PREFIX: succeeded" "ntfy.sh/$NTFY_TOPIC_NAME" > /dev/null
+    curl -s "${AUTH_ARGS[@]}" -d "$PREFIX: succeeded" "ntfy.sh/$NTFY_TOPIC_NAME"
   else
-    curl -s -d "$PREFIX: failed (exit $NTFY_REPORT_EXIT_CODE)" "ntfy.sh/$NTFY_TOPIC_NAME" > /dev/null
+    curl -s "${AUTH_ARGS[@]}" -d "$PREFIX: failed (exit $NTFY_REPORT_EXIT_CODE)" "ntfy.sh/$NTFY_TOPIC_NAME"
   fi
 else
-  curl -s -d "$1" "ntfy.sh/$NTFY_TOPIC_NAME" > /dev/null
+  curl -s "${AUTH_ARGS[@]}" -d "$1" "ntfy.sh/$NTFY_TOPIC_NAME"
 fi
