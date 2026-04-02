@@ -1,18 +1,13 @@
 #!/bin/bash
 
-# Called by the -ntfy shell function. Do not call directly.
+# Called by the -n shell function. Do not call directly.
 # Usage:
-#   -ntfy "message"                  Send a plain message
-#   command; -ntfy -c "prefix"       Report success/failure of previous command
+#   command; -n              Report success/failure of previous command
+#   command; -n "message"    Report success/failure with custom message prefix
+#   command; -n -s "message" Send message without exit status
 
 if [ -z "$NTFY_TOPIC_NAME" ]; then
   echo "Error: NTFY_TOPIC_NAME is not set" >&2
-  exit 1
-fi
-
-if [ $# -eq 0 ]; then
-  echo 'Usage: -ntfy "message"' >&2
-  echo '       command; -ntfy -c "prefix"' >&2
   exit 1
 fi
 
@@ -21,14 +16,20 @@ if [ -n "$NTFY_API_TOKEN" ]; then
   AUTH_ARGS=(-H "Authorization: Bearer $NTFY_API_TOKEN")
 fi
 
-if [ "$1" = "-c" ]; then
+SKIP_STATUS=0
+if [ "$1" = "-s" ]; then
+  SKIP_STATUS=1
   shift
+fi
+
+if [ "$SKIP_STATUS" -eq 1 ]; then
+  MSG="${1:-notification}"
+  curl -s "${AUTH_ARGS[@]}" -d "$MSG" "ntfy.sh/$NTFY_TOPIC_NAME"
+else
   PREFIX="${1:-command}"
   if [ "$NTFY_REPORT_EXIT_CODE" -eq 0 ] 2>/dev/null; then
     curl -s "${AUTH_ARGS[@]}" -d "$PREFIX: succeeded" "ntfy.sh/$NTFY_TOPIC_NAME"
   else
     curl -s "${AUTH_ARGS[@]}" -d "$PREFIX: failed (exit $NTFY_REPORT_EXIT_CODE)" "ntfy.sh/$NTFY_TOPIC_NAME"
   fi
-else
-  curl -s "${AUTH_ARGS[@]}" -d "$1" "ntfy.sh/$NTFY_TOPIC_NAME"
 fi
