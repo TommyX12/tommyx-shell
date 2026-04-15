@@ -29,6 +29,7 @@ REPO_CONFIG_FILE = ".repo_auto_sync.json"
 
 
 class RepoConfig(pydantic.BaseModel):
+    skip: bool = False
     auto_pull: bool = False
     auto_push: bool = False
     auto_rebase_on_failed_push: bool = False
@@ -153,11 +154,21 @@ def main():
 
     action_needed = []
 
+    # Separate skipped repos from active repos
+    active_repos = []
+    for repo in repos:
+        config = get_repo_config(repo)
+        if config.skip:
+            repo_configs[repo] = config
+            print(f"{format_repo(repo)} ... {blue('skipped')}")
+        else:
+            active_repos.append(repo)
+
     # Use parallel processing for initial scan with max 8 workers
-    max_workers = min(MAX_WORKERS, len(repos))
+    max_workers = min(MAX_WORKERS, len(active_repos)) if active_repos else 1
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         # Submit all repo status checks
-        future_to_repo = {executor.submit(check_repo_status, repo): repo for repo in repos}
+        future_to_repo = {executor.submit(check_repo_status, repo): repo for repo in active_repos}
 
         # Process results as they complete
         for future in as_completed(future_to_repo):
