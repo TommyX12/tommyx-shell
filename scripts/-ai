@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # Parse options
-accept_edits=false
+permission_mode=""
 branch_name=""
 base=""
 passthrough_args=()
@@ -13,7 +13,8 @@ reuse_prompt=false
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    -a) accept_edits=true; shift ;;
+    -a) permission_mode="auto"; shift ;;
+    -e) permission_mode="acceptEdits"; shift ;;
     -n) branch_name="$2"; shift 2 ;;
     -b) base="$2"; shift 2 ;;
     -r) reuse_prompt=true; shift ;;
@@ -24,8 +25,8 @@ done
 
 # Build adapter args
 adapter_args=()
-if [[ "$accept_edits" == true ]]; then
-  adapter_args+=("--permission-mode" "acceptEdits")
+if [[ -n "$permission_mode" ]]; then
+  adapter_args+=("--permission-mode" "$permission_mode")
 fi
 
 # Create prompt file with timestamp and tag
