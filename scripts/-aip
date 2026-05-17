@@ -1,4 +1,4 @@
 #!/bin/bash
 set -e
 
-exec -ai -p "$@"
+exec -- -ai -p "$@"
