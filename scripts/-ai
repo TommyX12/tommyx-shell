@@ -11,6 +11,7 @@ passthrough_args=()
 
 reuse_prompt=false
 edit_only=false
+skip_prompt=false
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -20,6 +21,7 @@ while [[ $# -gt 0 ]]; do
     -b) base="$2"; shift 2 ;;
     -r) reuse_prompt=true; shift ;;
     -p) edit_only=true; shift ;;
+    -d) skip_prompt=true; shift ;;
     --) shift; passthrough_args+=("$@"); break ;;
     *) passthrough_args+=("$1"); shift ;;
   esac
@@ -31,45 +33,48 @@ if [[ -n "$permission_mode" ]]; then
   adapter_args+=("--permission-mode" "$permission_mode")
 fi
 
-# Create prompt file with timestamp and tag
-mkdir -p ~/ai-prompts
-folder_name="$(basename "$(pwd)")"
-if [[ -n "$branch_name" ]]; then
-  tag="${folder_name}_${branch_name}"
-else
-  tag="$folder_name"
-fi
-prompt_file=~/ai-prompts/"$(date '+%Y-%m-%d_%H-%M-%S')_${tag}.md"
+prompt_file=""
+if [[ "$skip_prompt" != true ]]; then
+  # Create prompt file with timestamp and tag
+  mkdir -p ~/ai-prompts
+  folder_name="$(basename "$(pwd)")"
+  if [[ -n "$branch_name" ]]; then
+    tag="${folder_name}_${branch_name}"
+  else
+    tag="$folder_name"
+  fi
+  prompt_file=~/ai-prompts/"$(date '+%Y-%m-%d_%H-%M-%S')_${tag}.md"
 
-# If -r, let user pick a past prompt via fzf (fuzzy matches filename + content)
-if [[ "$reuse_prompt" == true ]]; then
-  past_prompts=$(ls -t ~/ai-prompts/*.md 2>/dev/null || true)
-  if [[ -n "$past_prompts" ]]; then
-    entries=$(
-      while IFS= read -r f; do
-        printf '%s\t%s\t%s\n' "$(basename "$f")" "$(tr '\n\t' '  ' < "$f")" "$f"
-      done <<< "$past_prompts"
-    )
-    selected=$(
-      {
-        echo "[new prompt]"
-        printf '%s\n' "$entries"
-      } | fzf --height=40 --layout=reverse --border \
-              --delimiter=$'\t' --with-nth=1,2 \
-              --preview='[[ {1} == "[new prompt]" ]] && echo "(empty)" || cat {3}' \
-              --preview-window=right:60%
-    ) || exit 0
-    if [[ "$selected" != "[new prompt]" ]]; then
-      IFS=$'\t' read -r _ _ selected_path <<< "$selected"
-      cp "$selected_path" "$prompt_file"
+  # If -r, let user pick a past prompt via fzf (fuzzy matches filename + content)
+  if [[ "$reuse_prompt" == true ]]; then
+    past_prompts=$(ls -t ~/ai-prompts/*.md 2>/dev/null || true)
+    if [[ -n "$past_prompts" ]]; then
+      entries=$(
+        while IFS= read -r f; do
+          printf '%s\t%s\t%s\n' "$(basename "$f")" "$(tr '\n\t' '  ' < "$f")" "$f"
+        done <<< "$past_prompts"
+      )
+      selected=$(
+        {
+          echo "[new prompt]"
+          printf '%s\n' "$entries"
+        } | fzf --height=40 --layout=reverse --border \
+                --delimiter=$'\t' --with-nth=1,2 \
+                --preview='[[ {1} == "[new prompt]" ]] && echo "(empty)" || cat {3}' \
+                --preview-window=right:60%
+      ) || exit 0
+      if [[ "$selected" != "[new prompt]" ]]; then
+        IFS=$'\t' read -r _ _ selected_path <<< "$selected"
+        cp "$selected_path" "$prompt_file"
+      fi
     fi
   fi
-fi
 
-"${EDITOR:-vim}" "$prompt_file"
+  "${EDITOR:-vim}" "$prompt_file"
 
-if [[ "$edit_only" == true ]]; then
-  exit 0
+  if [[ "$edit_only" == true ]]; then
+    exit 0
+  fi
 fi
 
 # Handle worktree
@@ -127,7 +132,7 @@ fi
 adapter_args+=("--name" "$adapter_name")
 
 # Run adapter: pipe file content if non-empty, otherwise just call
-if grep -q '[^[:space:]]' "$prompt_file" 2>/dev/null; then
+if [[ -n "$prompt_file" ]] && grep -q '[^[:space:]]' "$prompt_file" 2>/dev/null; then
   cat "$prompt_file" | -ai-agent-adapter "${adapter_args[@]}" "${passthrough_args[@]}"
 else
   -ai-agent-adapter "${adapter_args[@]}" "${passthrough_args[@]}"
