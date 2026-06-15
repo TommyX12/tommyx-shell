@@ -55,6 +55,7 @@ alias i="sgpt"
 alias f="vifm"
 alias v="nvim"
 alias g="lazygit"
+alias c="cd"
 
 # temperature
 alias temperature="sysctl machdep.xcpm.cpu_thermal_level; sysctl machdep.xcpm.gpu_thermal_level"
@@ -92,6 +93,7 @@ cl () {
         fi
     fi
 }
+alias -- -c=-cd
 
 -git-select-worktree() {
   local main_repo worktrees_dir items choice
