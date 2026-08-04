@@ -1,4 +1,21 @@
 #!/usr/bin/env bash
 set -e
 
-zellij -l ~/data/tommyx-zellij-config/layouts/main.kdl a -c "$(-zellij-main-session-name)" "$@"
+restart=0
+args=()
+for arg in "$@"; do
+    if [[ "$arg" == "--restart" ]]; then
+        restart=1
+    else
+        args+=("$arg")
+    fi
+done
+
+session="$(-zellij-main-session-name)"
+
+if [[ "$restart" == 1 ]]; then
+    zellij kill-session "$session" || true
+    zellij delete-session "$session" || true
+fi
+
+zellij -l ~/data/tommyx-zellij-config/layouts/main.kdl a -c "$session" "${args[@]}"
