@@ -112,10 +112,15 @@ alias -- -c=-cd
   choice=$(printf '%s\n' "${items[@]}" | fzf --height=40 --layout=reverse --border \
     --preview '
       if [[ {} == "[main_repo]" ]]; then
-        git -C "$_fzf_main_repo" log --oneline --color=always -n 16
+        dir="$_fzf_main_repo"
       else
-        git -C "$_fzf_worktrees_dir/"{} log --oneline --color=always -n 16
+        dir="$_fzf_worktrees_dir/"{}
       fi
+      branch="$(git -C "$dir" branch --show-current)"
+      [[ -z "$branch" ]] && branch="(detached at $(git -C "$dir" rev-parse --short HEAD))"
+      echo "$branch"
+      echo
+      git -C "$dir" log --oneline --color=always -n 16
     ' \
     --preview-window=right:50%) || { unset _fzf_main_repo _fzf_worktrees_dir; return 0; }
   unset _fzf_main_repo _fzf_worktrees_dir
