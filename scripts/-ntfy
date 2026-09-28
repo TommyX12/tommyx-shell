@@ -24,12 +24,12 @@ fi
 
 if [ "$SKIP_STATUS" -eq 1 ]; then
   MSG="${1:-notification}"
-  curl -s "${AUTH_ARGS[@]}" -d "$MSG" "ntfy.sh/$NTFY_TOPIC_NAME"
+  curl -sS --max-time 10 "${AUTH_ARGS[@]}" -d "$MSG" "ntfy.sh/$NTFY_TOPIC_NAME"
 else
   PREFIX="${1:-command}"
   if [ "$NTFY_REPORT_EXIT_CODE" -eq 0 ] 2>/dev/null; then
-    curl -s "${AUTH_ARGS[@]}" -d "$PREFIX: succeeded" "ntfy.sh/$NTFY_TOPIC_NAME"
+    curl -sS --max-time 10 "${AUTH_ARGS[@]}" -d "$PREFIX: succeeded" "ntfy.sh/$NTFY_TOPIC_NAME"
   else
-    curl -s "${AUTH_ARGS[@]}" -d "$PREFIX: failed (exit $NTFY_REPORT_EXIT_CODE)" "ntfy.sh/$NTFY_TOPIC_NAME"
+    curl -sS --max-time 10 "${AUTH_ARGS[@]}" -d "$PREFIX: failed (exit $NTFY_REPORT_EXIT_CODE)" "ntfy.sh/$NTFY_TOPIC_NAME"
   fi
 fi
