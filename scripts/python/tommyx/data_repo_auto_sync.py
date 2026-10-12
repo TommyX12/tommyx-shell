@@ -14,6 +14,11 @@ VERBOSE = False
 PULL_ONLY = False
 # max workers, controlled via command-line
 MAX_WORKERS = 16
+# non-interactive flag, controlled via command-line: never prompt. Questions are answered
+# "no", a repo that would need a prompt to continue is skipped and counted as a failure.
+NON_INTERACTIVE = False
+# failures recorded in non-interactive mode; non-empty -> exit 1
+FAILURES = []
 
 REPOS_TO_CHECK = [
     "~/data/*",
@@ -108,11 +113,23 @@ def check_upstream_commits(repo_path):
 
     except Exception as e:
         print(f"Failed to check upstream {format_repo(repo_path)}: {e}")
+        FAILURES.append(f"{repo_path}: failed to check upstream: {e}")
         return 0
 
 
 def yn_question(prompt):
+    if NON_INTERACTIVE:
+        print(f"{prompt} [y/n]: n (non-interactive)")
+        return False
     return input(red(f"{prompt} [y/n]: ")).strip().lower() == "y"
+
+
+def skip_repo_question(repo, reason):
+    """Ask whether to skip the repo after an error. Non-interactive: always skip, record failure."""
+    if NON_INTERACTIVE:
+        FAILURES.append(f"{repo}: {reason}")
+        return True
+    return yn_question("Skip this repo?")
 
 
 def get_repo_list():
@@ -142,6 +159,7 @@ def check_repo_status(repo_path):
 
     except Exception as e:
         print(f"Error checking repo {format_repo(repo_path)}: {e}")
+        FAILURES.append(f"{repo_path}: error checking repo: {e}")
         return repo_path, False, RepoConfig()
 
 
@@ -200,7 +218,7 @@ def main():
 
                 except Exception as e:
                     print(f"Fast-forward pull failed: {e}")
-                    if yn_question("Skip this repo? "):
+                    if skip_repo_question(p, f"pull --ff-only failed: {e}"):
                         print("Skipped.")
                         continue
 
@@ -220,7 +238,7 @@ def main():
 
         except Exception as e:
             print(f"Failed to check git status: {e}")
-            if yn_question("Skip this repo?"):
+            if skip_repo_question(p, f"git status failed: {e}"):
                 print("Skipped.")
                 continue
 
@@ -257,7 +275,7 @@ def main():
 
                             except Exception as e:
                                 print(f"Push failed again: {e}")
-                                if yn_question("Skip this repo?"):
+                                if skip_repo_question(p, f"push failed after rebase: {e}"):
                                     print("Skipped.")
                                     continue
 
@@ -266,30 +284,39 @@ def main():
 
                     except Exception as e:
                         print(f"Failed to pull.")
-                        if yn_question("Skip this repo?"):
+                        if skip_repo_question(p, f"pull --rebase failed: {e}"):
                             print("Skipped.")
                             continue
 
                         else:
                             exit(1)
 
-                if yn_question("Skip this repo?"):
+                if skip_repo_question(p, "commit & push failed"):
                     print("Skipped.")
                     continue
 
                 else:
                     exit(1)
 
+    if FAILURES:
+        print("-----------------------------------------------")
+        print(red(f"{len(FAILURES)} failure(s):"))
+        for f in FAILURES:
+            print(f"  {f}")
+        exit(1)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Check repo status and push changes")
     parser.add_argument("-v", "--verbose", action="store_true", help="enable verbose output")
     parser.add_argument("--pull-only", action="store_true", help="only pull changes from remote repos, skip all push operations")
+    parser.add_argument("--non-interactive", action="store_true", help="never prompt: answer no, skip repos that hit an error, exit 1 if any failed")
     parser.add_argument("--max-workers", type=int, default=MAX_WORKERS, help="maximum number of workers to use for parallel processing")
     args = parser.parse_args()
     # set global flags
     VERBOSE = args.verbose
     PULL_ONLY = args.pull_only
     MAX_WORKERS = args.max_workers
+    NON_INTERACTIVE = args.non_interactive
 
     main()
