@@ -17,8 +17,10 @@ MAX_WORKERS = 16
 # non-interactive flag, controlled via command-line: never prompt. Questions are answered
 # "no", a repo that would need a prompt to continue is skipped and counted as a failure.
 NON_INTERACTIVE = False
-# failures recorded in non-interactive mode; non-empty -> exit 1
+# failures recorded in non-interactive mode; non-empty -> exit 1 (unless EXIT_ZERO)
 FAILURES = []
+# exit-zero flag, controlled via command-line: report failures but still exit 0
+EXIT_ZERO = False
 
 REPOS_TO_CHECK = [
     "~/data/*",
@@ -303,7 +305,8 @@ def main():
         print(red(f"{len(FAILURES)} failure(s):"))
         for f in FAILURES:
             print(f"  {f}")
-        exit(1)
+        if not EXIT_ZERO:
+            exit(1)
 
 
 if __name__ == "__main__":
@@ -311,6 +314,7 @@ if __name__ == "__main__":
     parser.add_argument("-v", "--verbose", action="store_true", help="enable verbose output")
     parser.add_argument("--pull-only", action="store_true", help="only pull changes from remote repos, skip all push operations")
     parser.add_argument("--non-interactive", action="store_true", help="never prompt: answer no, skip repos that hit an error, exit 1 if any failed")
+    parser.add_argument("--exit-zero", action="store_true", help="exit 0 even if some repos failed (failures are still listed)")
     parser.add_argument("--max-workers", type=int, default=MAX_WORKERS, help="maximum number of workers to use for parallel processing")
     args = parser.parse_args()
     # set global flags
@@ -318,5 +322,10 @@ if __name__ == "__main__":
     PULL_ONLY = args.pull_only
     MAX_WORKERS = args.max_workers
     NON_INTERACTIVE = args.non_interactive
+    EXIT_ZERO = args.exit_zero
+    if NON_INTERACTIVE:
+        # git and ssh prompt on /dev/tty, not stdin: make them fail instead of waiting
+        os.environ["GIT_TERMINAL_PROMPT"] = "0"
+        os.environ["GIT_SSH_COMMAND"] = "ssh -o BatchMode=yes"
 
     main()
