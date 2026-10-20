@@ -93,6 +93,14 @@ def run_command(command, shell=True, check=True, cwd=None):
         raise e
 
 
+def why(e):
+    """Short reason for a failure list: the command's first stderr line (e.g. git's "You have not
+    agreed to the Xcode license agreements..."), else the exception text."""
+    err = getattr(e, "stderr", None) or ""
+    line = next((l.strip() for l in err.splitlines() if l.strip()), "")
+    return f"{e} ({line})" if line else str(e)
+
+
 def get_git_dirty_text(cwd=None):
     outtext, outerr = run_command("git status", cwd=cwd)
     out = outtext + (outerr if outerr else "")
@@ -115,8 +123,21 @@ def check_upstream_commits(repo_path):
 
     except Exception as e:
         print(f"Failed to check upstream {format_repo(repo_path)}: {e}")
-        FAILURES.append(f"{repo_path}: failed to check upstream: {e}")
+        FAILURES.append(f"{repo_path}: failed to check upstream: {why(e)}")
         return 0
+
+
+def check_pushed(repo):
+    """After commit & push: the repo must be clean and not ahead (`git commit` runs unchecked, so a
+    failed commit would otherwise pass silently). Records a failure if not."""
+    try:
+        dirty = get_git_dirty_text(cwd=repo)
+    except Exception as e:
+        dirty = f"git status failed: {e}"
+    if dirty is not None:
+        print(red("Still dirty or ahead after commit & push:"))
+        print(dirty)
+        FAILURES.append(f"{repo}: still dirty or ahead after commit & push")
 
 
 def yn_question(prompt):
@@ -161,7 +182,7 @@ def check_repo_status(repo_path):
 
     except Exception as e:
         print(f"Error checking repo {format_repo(repo_path)}: {e}")
-        FAILURES.append(f"{repo_path}: error checking repo: {e}")
+        FAILURES.append(f"{repo_path}: error checking repo: {why(e)}")
         return repo_path, False, RepoConfig()
 
 
@@ -220,7 +241,7 @@ def main():
 
                 except Exception as e:
                     print(f"Fast-forward pull failed: {e}")
-                    if skip_repo_question(p, f"pull --ff-only failed: {e}"):
+                    if skip_repo_question(p, f"pull --ff-only failed: {why(e)}"):
                         print("Skipped.")
                         continue
 
@@ -240,7 +261,7 @@ def main():
 
         except Exception as e:
             print(f"Failed to check git status: {e}")
-            if skip_repo_question(p, f"git status failed: {e}"):
+            if skip_repo_question(p, f"git status failed: {why(e)}"):
                 print("Skipped.")
                 continue
 
@@ -258,6 +279,7 @@ def main():
                 run_command('git commit -m "update"', check=False, cwd=p)
                 run_command("git push", cwd=p)
                 print("Done.")
+                check_pushed(p)
 
             except Exception as e:
                 print(f"Commit & push failed: {e}")
@@ -273,11 +295,12 @@ def main():
                                 run_command('git commit -m "update"', check=False, cwd=p)
                                 run_command("git push", cwd=p)
                                 print("Done.")
+                                check_pushed(p)
                                 continue
 
                             except Exception as e:
                                 print(f"Push failed again: {e}")
-                                if skip_repo_question(p, f"push failed after rebase: {e}"):
+                                if skip_repo_question(p, f"push failed after rebase: {why(e)}"):
                                     print("Skipped.")
                                     continue
 
@@ -286,7 +309,7 @@ def main():
 
                     except Exception as e:
                         print(f"Failed to pull.")
-                        if skip_repo_question(p, f"pull --rebase failed: {e}"):
+                        if skip_repo_question(p, f"pull --rebase failed: {why(e)}"):
                             print("Skipped.")
                             continue
 
